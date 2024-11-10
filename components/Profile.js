@@ -105,7 +105,7 @@ export default function Profile() {
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statNumber}>${userStats.totalSpent}</Text>
-          <Text style={styles.statLabel}>journal</Text>
+          <Text style={styles.statLabel}>Journal</Text>
         </View>
       </View>
 
