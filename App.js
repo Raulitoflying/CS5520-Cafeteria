@@ -13,7 +13,8 @@ import Favorite from './screens/Favorite';
 import History from './screens/History';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Profile from './components/Profile';
+import Journal from './components/Journal';
+import Profile from './screens/Profile';
 import PressableButton from './components/PressableButton';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -154,6 +155,28 @@ export default function App() {
     );
   }
 
+  function ProfileStack() {
+    return (
+      <Stack.Navigator screenOptions={{
+        headerRight: () => <LogoutButton />,
+        headerRightContainerStyle: styles.headerRightContainer,
+        headerStyle: styles.header,
+        headerTintColor: '#4A2B29',
+      }}>
+        <Stack.Screen
+          name="ProfileScreen"
+          component={Profile}
+          options={{ title: "Profile" }}
+        />
+        <Stack.Screen
+          name="Journal"
+          component={Journal}
+          options={{ title: "Journal" }}
+        />
+      </Stack.Navigator>
+    );
+  }
+
   function MainApp() {
     return (
       <Tab.Navigator screenOptions={({ route }) => ({
@@ -181,14 +204,7 @@ export default function App() {
         <Tab.Screen name="History" component={HistoryStack} options={{ headerShown: false }} />
         <Tab.Screen name="Favorite" component={FavoriteStack} options={{ headerShown: false }} />
         <Tab.Screen name="Cart" component={CartStack} options={{ headerShown: false }} />
-        <Tab.Screen 
-          name="Profile" 
-          component={Profile}
-          options={{
-            headerRight: () => <LogoutButton />,
-            headerRightContainerStyle: styles.headerRightContainer,
-          }}
-        />
+        <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false}}/>
       </Tab.Navigator>
     );
   }

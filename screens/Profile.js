@@ -105,7 +105,9 @@ export default function Profile() {
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statNumber}>${userStats.totalSpent}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Journal')}>
           <Text style={styles.statLabel}>Journal</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
