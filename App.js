@@ -13,8 +13,10 @@ import Favorite from './screens/Favorite';
 import History from './screens/History';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import Profile from './components/Profile';
-import PressableButton from './components/PressableButton';
+import Journal from './components/Journal';
+import AddJournal from './components/AddJournal';
+import Profile from './screens/Profile';
+import Payment from './components/Payment';
 import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
@@ -63,6 +65,15 @@ export default function App() {
       style={styles.logoutButton}
     >
       <Feather name="log-out" size={24} color="#4A2B29" />
+    </TouchableOpacity>
+  );
+
+  const AddButton = ({navigation}) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('AddJournal')}
+      style={styles.logoutButton}
+    >
+      <Feather name="plus" size={24} color="#4A2B29" />
     </TouchableOpacity>
   );
 
@@ -130,6 +141,11 @@ export default function App() {
           component={Cart}
           options={{ title: "Cart" }}
         />
+        <Stack.Screen
+          name="Payment"
+          component={Payment}
+          options={{ title: "Payment" }}
+        />
       </Stack.Navigator>
     );
   }
@@ -149,6 +165,41 @@ export default function App() {
           name="Signup" 
           component={Signup}
           options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  function ProfileStack() {
+    return (
+      <Stack.Navigator screenOptions={{
+        headerStyle: styles.header,
+        headerTintColor: '#4A2B29',
+      }}>
+        <Stack.Screen
+          name="ProfileScreen"
+          component={Profile}
+          options={{
+            title: "Profile",
+            headerRight: () => <LogoutButton />,
+            headerRightContainerStyle: styles.headerRightContainer,
+          }}
+        />
+        <Stack.Screen
+          name="Journal"
+          component={Journal}
+          options={({ navigation }) => ({
+            title: "Journal",
+            headerRight: () => <AddButton navigation={navigation}/>,
+            headerRightContainerStyle: styles.headerRightContainer,
+          })}
+        />
+        <Stack.Screen
+          name="AddJournal"
+          component={AddJournal}
+          options={{
+            title: "Add Journal",
+          }}
         />
       </Stack.Navigator>
     );
@@ -181,14 +232,7 @@ export default function App() {
         <Tab.Screen name="History" component={HistoryStack} options={{ headerShown: false }} />
         <Tab.Screen name="Favorite" component={FavoriteStack} options={{ headerShown: false }} />
         <Tab.Screen name="Cart" component={CartStack} options={{ headerShown: false }} />
-        <Tab.Screen 
-          name="Profile" 
-          component={Profile}
-          options={{
-            headerRight: () => <LogoutButton />,
-            headerRightContainerStyle: styles.headerRightContainer,
-          }}
-        />
+        <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false}}/>
       </Tab.Navigator>
     );
   }
