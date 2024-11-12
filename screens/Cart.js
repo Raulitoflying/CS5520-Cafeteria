@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, Text } from 'react-native';
+import { StyleSheet, View, FlatList, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
@@ -46,6 +46,8 @@ export default function Cart() {
     return () => unsubscribe();
   }, []);
 
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -55,7 +57,16 @@ export default function Cart() {
           <CartCard item={item} onDecrease={() => handleDecrease(item)} onIncrease={() => handleIncrease(item)}/>
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
+        contentContainerStyle={{ paddingBottom: 50 }}
+        showsVerticalScrollIndicator={false}
       />
+
+      <View style={styles.bottomContainer}>
+        <Text style={styles.totalText}>Total Price: ${totalPrice.toFixed(2)}</Text>
+          <TouchableOpacity style={styles.payButton}>
+            <Text style={styles.payButtonText}>Pay</Text>
+          </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -70,5 +81,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#888',
     marginTop: 20,
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#333',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  totalText: {
+    color: '#FFA500',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  payButton: {
+    backgroundColor: '#D2691E',
+    paddingVertical: 8,
+    paddingHorizontal: 50,
+    borderRadius: 15,
+  },
+  payButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
