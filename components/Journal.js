@@ -1,32 +1,41 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
+import React, { useState } from 'react'
 import DiaryEntryCard from './DiaryEntryCard'
 
 // TODO: for test, delete later
 const diaryEntries = [
   {
     id: 1,
-    title: 'First Entry',
+    title: 'Lucy Afternoon',
     date: '2021-10-01',
     image: require('../assets/journal_images/diary1.jpeg'),
   },
 
   {
-    id: 1,
-    title: 'First Entry',
+    id: 2,
+    title: 'Morning Coffee',
     date: '2021-10-01',
     image: require('../assets/journal_images/diary1.jpeg'),
   },
 
   {
-    id: 1,
-    title: 'First Entry',
+    id: 3,
+    title: 'Lattes with Friends',
     date: '2021-10-01',
     image: require('../assets/journal_images/diary1.jpeg'),
   },
 ]
 
 export default function Journal() {
+  const [searchText, setSearchText] = useState('');
+  const [filteredEntries, setFilteredEntries] = useState(diaryEntries);
+
+  function handleSearch(text) {
+    setSearchText(text);
+    const filtered = diaryEntries.filter((entry) => entry.title.toLowerCase().includes(text.toLowerCase()));
+    setFilteredEntries(filtered);
+  }
+
   return (
     <View style={styles.container}>
       {/* Profile Section */}
@@ -57,9 +66,17 @@ export default function Journal() {
         </View>  
       </View>
 
+      {/* Divider */}
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search diary..."
+        value={searchText}
+        onChangeText={handleSearch}
+      />
+
       {/* Diary Section */}
       <FlatList
-        data={diaryEntries}
+        data={filteredEntries}
         keyExtractor={(item) => item.id.toString()}
         columnWrapperStyle={styles.columnWrapper}
         numColumns={2}
@@ -120,42 +137,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  accountManagement: {
-    backgroundColor: '#f0f0f0',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  managementText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  managementSubtext: {
-    fontSize: 12,
-    color: '#666',
-  },
-  actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
-  },
-  editButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+  searchBar: {
+    height: 40,
+    borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-  },
-  shareButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-  },
-  buttonText: {
-    fontSize: 14,
+    paddingLeft: 10,
+    marginBottom: 16,
+    backgroundColor: '#f9f9f9',
   },
   columnWrapper: {
     justifyContent: 'space-between',

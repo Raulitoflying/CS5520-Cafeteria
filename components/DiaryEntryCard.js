@@ -15,20 +15,16 @@ export default function DiaryEntryCard({title, date, image}) {
 
 const styles = StyleSheet.create({
   entryCard: {
+    width: 170,
     flex: 1,
     margin: 5,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
   entryImage: {
     width: '100%',
-    height: 140,
+    height: 260,
   },
   entryTitle: {
     fontSize: 14,
