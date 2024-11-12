@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView, Platform} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { writeToDB } from '../firebase/FirebaseHelper'
@@ -132,7 +132,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 20 },
+    marginBottom: 20 
+  },
   
   searchInput: {
     color: 'white',
@@ -142,29 +143,31 @@ const styles = StyleSheet.create({
 
   tabsContainer: {
     flexDirection: 'row',
-    marginBottom: 16
-  },
-
-  activeTab: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: 'orange',
-    marginRight: 16
+    marginBottom: 16,
+    marginTop: Platform.OS === 'android' ? -8 : 0,
+    height: 30,
   },
 
   tab: { 
-    paddingVertical: 8,
     paddingHorizontal: 12,
-    marginRight: 16 
+    marginRight: Platform.OS === 'android' ? 8 : 16,
+    height: '100%',
+    justifyContent: 'center',
   },
 
   tabText: {
     color: 'white',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 
-  activeTab: { borderBottomWidth: 2, borderBottomColor: 'orange' },
-  tabText: { color: 'white', fontWeight: 'bold' },
-  activeTabText: { color: 'orange' },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: 'orange',
+    paddingBottom: 4,
+  },
+
+  activeTabText: {
+    color: 'orange'
+  },
 })

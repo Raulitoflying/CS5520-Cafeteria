@@ -16,6 +16,8 @@ import Signup from './components/Signup';
 import Journal from './components/Journal';
 import AddJournal from './components/AddJournal';
 import Profile from './screens/Profile';
+import EditProfile from './components/EditProfile';
+import PressableButton from './components/PressableButton';
 import Payment from './components/Payment';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -199,6 +201,13 @@ export default function App() {
           component={AddJournal}
           options={{
             title: "Add Journal",
+          }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{
+            title: "Edit Profile",
           }}
         />
       </Stack.Navigator>
