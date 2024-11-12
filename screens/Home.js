@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import React from 'react'
 
@@ -66,5 +66,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 10,
     width: '80%',
+  },
+
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#333',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20 },
+  
+  searchInput: {
+    color: 'white',
+    marginLeft: 10,
+    flex: 1,
   },
 })
