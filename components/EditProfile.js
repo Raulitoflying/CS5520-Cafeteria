@@ -79,7 +79,7 @@ export default function EditProfile() {
       Alert.alert('Missing Fields', 'Please fill in all fields to save.');
       return;
     }
-
+  
     const profileData = {
       displayName,
       phone,
@@ -87,10 +87,11 @@ export default function EditProfile() {
       imageUri: selectedImage,
       userId: user.uid,
     };
-
-    try { await writeToDB(profileData, 'profiles');
+  
+    try {
+      await writeToDB(profileData, 'profiles');
       Alert.alert('Success', 'Profile updated successfully', [
-        { text: 'OK', onPress: () => navigator.goBack() },
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
       console.error('Error updating profile: ', error);
