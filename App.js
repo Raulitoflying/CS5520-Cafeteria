@@ -67,6 +67,15 @@ export default function App() {
     </TouchableOpacity>
   );
 
+  const AddButton = () => (
+    <TouchableOpacity
+      onPress={() => console.log('Add button pressed')}
+      style={styles.logoutButton}
+    >
+      <Feather name="plus" size={24} color="#4A2B29" />
+    </TouchableOpacity>
+  );
+
   function HomeStack() {
     return (
       <Stack.Navigator screenOptions={{
@@ -158,20 +167,26 @@ export default function App() {
   function ProfileStack() {
     return (
       <Stack.Navigator screenOptions={{
-        headerRight: () => <LogoutButton />,
-        headerRightContainerStyle: styles.headerRightContainer,
         headerStyle: styles.header,
         headerTintColor: '#4A2B29',
       }}>
         <Stack.Screen
           name="ProfileScreen"
           component={Profile}
-          options={{ title: "Profile" }}
+          options={{
+            title: "Profile",
+            headerRight: () => <LogoutButton />,
+            headerRightContainerStyle: styles.headerRightContainer,
+          }}
         />
         <Stack.Screen
           name="Journal"
           component={Journal}
-          options={{ title: "Journal" }}
+          options={{
+            title: "Journal",
+            headerRight: () => <AddButton />,
+            headerRightContainerStyle: styles.headerRightContainer,
+          }}
         />
       </Stack.Navigator>
     );
