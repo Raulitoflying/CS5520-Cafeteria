@@ -5,8 +5,9 @@ import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
 
 export default function Home() {
-  const categories = ['All', 'Espresso', 'Cappuccino', 'Latte', 'Mocha', 'Macchiato', 'Americano']
-  const [activeCategory, setActiveCategory] = useState('All')
+  const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato']
+  const [activeCategory, setActiveCategory] = useState('Espresso')
+  const filteredCoffeeData = CoffeeData.filter(coffee => coffee.name === activeCategory)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -33,33 +34,37 @@ export default function Home() {
       </View>
 
       {/* Category Tabs */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsContainer}>
-        {categories.map((category, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.tab, activeCategory === category && styles.activeTab]}
-            onPress={() => setActiveCategory(category)}
-          >
-            <Text style={[styles.tabText, activeCategory === category && styles.activeTabText]}>
-              {category}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.tabsContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+          {categories.map((category, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.tab, activeCategory === category && styles.activeTab]}
+              onPress={() => setActiveCategory(category)}
+            >
+              <Text style={[styles.tabText, activeCategory === category && styles.activeTabText]}>
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Coffee List */}
-      {/* <ScrollView>
-        {CoffeeData.map((coffee) => (
-          <CoffeeCard
-            key={coffee.id}
-            imageUri={coffee.imagelink_square}
-            title={coffee.title}
-            subtitle={coffee.special_ingredient}
-            price={coffee.prices[1].price}
-            onAddPress={() => console.log('Add to cart')}
-          />
-        ))}
-      </ScrollView> */}
+      <View>
+        <ScrollView horizontal>
+          {filteredCoffeeData.map((coffee) => (
+            <CoffeeCard
+              key={coffee.id}
+              imageUri={coffee.imagelink_square}
+              title={coffee.name}
+              subtitle={coffee.special_ingredient}
+              price={coffee.prices[1].price}
+              onAddPress={() => console.log('Add to cart')}
+            />
+          ))}
+        </ScrollView>
+      </View>
     </View>
   )
 }
