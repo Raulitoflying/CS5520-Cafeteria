@@ -16,7 +16,7 @@ import Signup from './components/Signup';
 import Journal from './components/Journal';
 import AddJournal from './components/AddJournal';
 import Profile from './screens/Profile';
-import PressableButton from './components/PressableButton';
+import Payment from './components/Payment';
 import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
@@ -140,6 +140,11 @@ export default function App() {
           name="CartScreen" 
           component={Cart}
           options={{ title: "Cart" }}
+        />
+        <Stack.Screen
+          name="Payment"
+          component={Payment}
+          options={{ title: "Payment" }}
         />
       </Stack.Navigator>
     );

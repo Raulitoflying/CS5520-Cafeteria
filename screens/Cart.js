@@ -5,7 +5,7 @@ import { database, auth } from '../firebase/FirebaseSetup';
 import CartCard from '../components/CartCard';
 import { updateDB } from '../firebase/FirebaseHelper';
 
-export default function Cart() {
+export default function Cart({navigation}) {
   const [cartItems, setCartItems] = useState([]);
   const currentUser = auth.currentUser;
 
@@ -63,7 +63,7 @@ export default function Cart() {
 
       <View style={styles.bottomContainer}>
         <Text style={styles.totalText}>Total Price: ${totalPrice.toFixed(2)}</Text>
-          <TouchableOpacity style={styles.payButton}>
+          <TouchableOpacity style={styles.payButton} onPress={() => navigation.navigate('Payment')}>
             <Text style={styles.payButtonText}>Pay</Text>
           </TouchableOpacity>
       </View>
