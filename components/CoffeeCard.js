@@ -5,7 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 export default function CoffeeCard({ imageUri, title, subtitle, price, onAddPress }) {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: imageUri }} style={styles.cardImage} />
+      <Image source={imageUri} style={styles.cardImage} />
       <Text style={styles.cardTitle}>{title}</Text>
       <Text style={styles.cardSubtitle}>{subtitle}</Text>
       <Text style={styles.cardPrice}>${price}</Text>
