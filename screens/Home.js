@@ -1,13 +1,31 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import React, { useState } from 'react'
+import { writeToDB } from '../firebase/FirebaseHelper'
 import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
+import { auth } from '../firebase/FirebaseSetup'
 
 export default function Home() {
   const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato']
   const [activeCategory, setActiveCategory] = useState('Espresso')
   const filteredCoffeeData = CoffeeData.filter(coffee => coffee.name === activeCategory)
+
+  function handleAddPress(coffee) {
+    const cartItem = {
+      userId: auth.currentUser.uid,
+      id: coffee.id,
+      name: coffee.name,
+      price: coffee.prices[1].price,
+      quantity: 1,
+    };
+
+    try {
+      writeToDB(cartItem, 'cart');
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  }
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -60,7 +78,7 @@ export default function Home() {
               title={coffee.name}
               subtitle={coffee.special_ingredient}
               price={coffee.prices[1].price}
-              onAddPress={() => console.log('Add to cart')}
+              onAddPress={() => handleAddPress(coffee)}
             />
           ))}
         </ScrollView>
