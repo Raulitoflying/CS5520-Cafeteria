@@ -2,12 +2,17 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 
 export default function DiaryEntryCard({title, date, image}) {
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
   return (
     <View style={styles.entryCard}>
       <Image source={image} style={styles.entryImage} />
       <Text style={styles.entryTitle}>{title}</Text>
       <View style={styles.entryInfo}>
-        <Text style={styles.date}>{date}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
       </View>
     </View>
   )

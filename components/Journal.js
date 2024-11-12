@@ -1,34 +1,33 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DiaryEntryCard from './DiaryEntryCard'
-
-// TODO: for test, delete later
-const diaryEntries = [
-  {
-    id: 1,
-    title: 'Lucy Afternoon',
-    date: '2021-10-01',
-    image: require('../assets/journal_images/diary1.jpeg'),
-  },
-
-  {
-    id: 2,
-    title: 'Morning Coffee',
-    date: '2021-10-01',
-    image: require('../assets/journal_images/diary1.jpeg'),
-  },
-
-  {
-    id: 3,
-    title: 'Lattes with Friends',
-    date: '2021-10-01',
-    image: require('../assets/journal_images/diary1.jpeg'),
-  },
-]
+import { collection, onSnapshot } from 'firebase/firestore';
+import { database, auth } from '../firebase/FirebaseSetup';
 
 export default function Journal() {
   const [searchText, setSearchText] = useState('');
   const [filteredEntries, setFilteredEntries] = useState(diaryEntries);
+  const [diaryEntries, setDiaryEntries] = useState([]);
+  const currentUser = auth.currentUser;
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(database, 'journals'),
+      (snapshot) => {
+        const entries = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })).filter((entry) => entry.userId === currentUser.uid);
+        setDiaryEntries(entries);
+        setFilteredEntries(entries);
+      },
+      (error) => {
+        console.error(error);
+      }
+    )
+
+    return () => unsubscribe();
+  }, []);
 
   function handleSearch(text) {
     setSearchText(text);
@@ -52,7 +51,7 @@ export default function Journal() {
         {/* Stats Section */}
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
-            <Text style={styles.statNumber}>5</Text>
+            <Text style={styles.statNumber}>{diaryEntries.length}</Text>
             <Text style={styles.statLabel}>Entries</Text>
           </View>
           <View style={styles.stat}>
@@ -82,7 +81,7 @@ export default function Journal() {
         numColumns={2}
         renderItem={({ item }) => (
           <TouchableOpacity>
-            <DiaryEntryCard title={item.title} image={item.image} date={item.date} />
+            <DiaryEntryCard title={item.title} image={{uri: item.imageUri}} date={item.date} />
           </TouchableOpacity>
         )}
       />

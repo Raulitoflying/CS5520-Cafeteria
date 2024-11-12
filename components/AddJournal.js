@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { auth } from '../firebase/FirebaseSetup';
+import { writeToDB } from '../firebase/FirebaseHelper';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AddJournal() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const navigator = useNavigation();
 
   // Open the image picker for the gallery
   const openImagePicker = async () => {
@@ -50,6 +54,34 @@ export default function AddJournal() {
       setModalVisible(false);
     }
   };
+
+  const handleSubmit = async() => {
+    if (!title || !content || !selectedImage) {
+      Alert.alert('Missing Fields', 'Please fill in all fields to submit your journal entry.');
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('Not Logged In', 'Please log in to submit a journal entry.');
+      return;
+    }
+
+    const journalData = {
+      title,
+      content,
+      date: new Date().toISOString(),
+      imageUri: selectedImage,
+      userId: user.uid,
+    };
+
+    try { await writeToDB(journalData, 'journals');
+    navigator.goBack();
+    } catch (error) {
+      console.error('Error adding document: ', error);
+      Alert.alert('Error', 'Failed to submit journal entry. Please try again.');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -102,7 +134,7 @@ export default function AddJournal() {
       />
 
       {/* Submit button */}
-      <TouchableOpacity style={styles.submitButton}>
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
     </View>
