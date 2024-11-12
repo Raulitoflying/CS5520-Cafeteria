@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView}
 import { FontAwesome } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import CoffeeCard from '../components/CoffeeCard'
+import CoffeeData from '../data/CoffeeData'
 
 export default function Home() {
   const categories = ['All', 'Espresso', 'Cappuccino', 'Latte', 'Mocha', 'Macchiato', 'Americano']
@@ -47,14 +48,18 @@ export default function Home() {
       </ScrollView>
 
       {/* Coffee List */}
-      <ScrollView>
-        <CoffeeCard
-          imageUri="..assets/coffee_assets/espresso/square/espresso_pic_1_square.png"
-          title="Espresso"
-          subtitle="Strong coffee"
-          price={2.99}
-        />
-      </ScrollView>
+      {/* <ScrollView>
+        {CoffeeData.map((coffee) => (
+          <CoffeeCard
+            key={coffee.id}
+            imageUri={coffee.imagelink_square}
+            title={coffee.title}
+            subtitle={coffee.special_ingredient}
+            price={coffee.prices[1].price}
+            onAddPress={() => console.log('Add to cart')}
+          />
+        ))}
+      </ScrollView> */}
     </View>
   )
 }
