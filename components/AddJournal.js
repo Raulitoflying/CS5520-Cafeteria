@@ -73,7 +73,6 @@ export default function AddJournal() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Choose an Option</Text>
             <TouchableOpacity onPress={openImagePicker} style={styles.modalButton}>
               <Text style={styles.buttonText}>Select from Gallery</Text>
             </TouchableOpacity>
@@ -182,7 +181,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     padding: 8,
     borderRadius: 5,
-    height: 80,
+    height: 200,
     textAlignVertical: 'top',
     marginBottom: 20,
     color: '#333',
