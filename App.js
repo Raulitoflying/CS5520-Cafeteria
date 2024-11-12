@@ -14,6 +14,7 @@ import History from './screens/History';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Journal from './components/Journal';
+import AddJournal from './components/AddJournal';
 import Profile from './screens/Profile';
 import PressableButton from './components/PressableButton';
 import { AntDesign } from '@expo/vector-icons';
@@ -67,9 +68,9 @@ export default function App() {
     </TouchableOpacity>
   );
 
-  const AddButton = () => (
+  const AddButton = ({navigation}) => (
     <TouchableOpacity
-      onPress={() => console.log('Add button pressed')}
+      onPress={() => navigation.navigate('AddJournal')}
       style={styles.logoutButton}
     >
       <Feather name="plus" size={24} color="#4A2B29" />
@@ -182,10 +183,17 @@ export default function App() {
         <Stack.Screen
           name="Journal"
           component={Journal}
-          options={{
+          options={({ navigation }) => ({
             title: "Journal",
-            headerRight: () => <AddButton />,
+            headerRight: () => <AddButton navigation={navigation}/>,
             headerRightContainerStyle: styles.headerRightContainer,
+          })}
+        />
+        <Stack.Screen
+          name="AddJournal"
+          component={AddJournal}
+          options={{
+            title: "Add Journal",
           }}
         />
       </Stack.Navigator>
