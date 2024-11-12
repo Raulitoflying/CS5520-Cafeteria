@@ -1,8 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView} from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
-import React from 'react'
+import React, { useState } from 'react'
+import CoffeeCard from '../components/CoffeeCard'
 
 export default function Home() {
+  const categories = ['All', 'Espresso', 'Cappuccino', 'Latte', 'Mocha', 'Macchiato', 'Americano']
+  const [activeCategory, setActiveCategory] = useState('All')
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -27,6 +30,37 @@ export default function Home() {
           style={styles.searchInput}
         />
       </View>
+
+      {/* Category Tabs */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsContainer}>
+        {categories.map((category, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.tab, activeCategory === category && styles.activeTab]}
+            onPress={() => setActiveCategory(category)}
+          >
+            <Text style={[styles.tabText, activeCategory === category && styles.activeTabText]}>
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Coffee List */}
+      <FlatList>
+        <CoffeeCard
+          imageUri="..assets/coffee_assets/espresso/square/espresso_pic_1_square.png"
+          title="Espresso"
+          subtitle="Strong coffee"
+          price={2.99}
+        />
+        <CoffeeCard
+          imageUri="..assets/coffee_assets/cappuccino/square/cappuccino_pic_1_square.png"
+          title="Cappuccino"
+          subtitle="Frothy coffee"
+          price={3.99}
+        />
+        
     </View>
   )
 }
@@ -81,4 +115,32 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     flex: 1,
   },
+
+  tabsContainer: {
+    flexDirection: 'row',
+    marginBottom: 16
+  },
+
+  activeTab: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: 'orange',
+    marginRight: 16
+  },
+
+  tab: { 
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 16 
+  },
+
+  tabText: {
+    color: 'white',
+    fontWeight: 'bold'
+  },
+
+  activeTab: { borderBottomWidth: 2, borderBottomColor: 'orange' },
+  tabText: { color: 'white', fontWeight: 'bold' },
+  activeTabText: { color: 'orange' },
 })
