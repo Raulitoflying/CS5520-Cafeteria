@@ -47,20 +47,14 @@ export default function Home() {
       </ScrollView>
 
       {/* Coffee List */}
-      <FlatList>
+      <ScrollView>
         <CoffeeCard
           imageUri="..assets/coffee_assets/espresso/square/espresso_pic_1_square.png"
           title="Espresso"
           subtitle="Strong coffee"
           price={2.99}
         />
-        <CoffeeCard
-          imageUri="..assets/coffee_assets/cappuccino/square/cappuccino_pic_1_square.png"
-          title="Cappuccino"
-          subtitle="Frothy coffee"
-          price={3.99}
-        />
-        
+      </ScrollView>
     </View>
   )
 }
