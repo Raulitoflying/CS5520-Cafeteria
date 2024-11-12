@@ -16,7 +16,9 @@ export default function Home() {
       userId: auth.currentUser.uid,
       id: coffee.id,
       name: coffee.name,
+      imageUri: coffee.imagelink_square,
       price: coffee.prices[1].price,
+      sizes: 'M',
       quantity: 1,
     };
 

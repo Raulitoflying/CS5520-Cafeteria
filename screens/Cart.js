@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
+import CartCard from '../components/CartCard';
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -27,20 +28,14 @@ export default function Cart() {
     return () => unsubscribe();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.itemPrice}>${item.price}</Text>
-      <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <FlatList
         data={cartItems}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
+        renderItem={({ item }) => (
+          <CartCard item={item} />
+        )}
         ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
       />
     </View>
@@ -52,23 +47,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-  },
-  itemContainer: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  itemName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  itemPrice: {
-    fontSize: 16,
-    color: '#888',
-  },
-  itemQuantity: {
-    fontSize: 14,
-    color: '#666',
   },
   emptyText: {
     textAlign: 'center',
