@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
+import DiaryEntryCard from './DiaryEntryCard'
 
 // TODO: for test, delete later
 const diaryEntries = [
@@ -7,7 +8,21 @@ const diaryEntries = [
     id: 1,
     title: 'First Entry',
     date: '2021-10-01',
-    image: require('../assets/app_images/entry1.png'),
+    image: require('../assets/journal_images/diary1.jpeg'),
+  },
+
+  {
+    id: 1,
+    title: 'First Entry',
+    date: '2021-10-01',
+    image: require('../assets/journal_images/diary1.jpeg'),
+  },
+
+  {
+    id: 1,
+    title: 'First Entry',
+    date: '2021-10-01',
+    image: require('../assets/journal_images/diary1.jpeg'),
   },
 ]
 
@@ -41,6 +56,19 @@ export default function Journal() {
           </View>
         </View>  
       </View>
+
+      {/* Diary Section */}
+      <FlatList
+        data={diaryEntries}
+        keyExtractor={(item) => item.id.toString()}
+        columnWrapperStyle={styles.columnWrapper}
+        numColumns={2}
+        renderItem={({ item }) => (
+          <TouchableOpacity>
+            <DiaryEntryCard title={item.title} image={item.image} date={item.date} />
+          </TouchableOpacity>
+        )}
+      />
     </View>
   )
 }
@@ -129,13 +157,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
   },
-  gallery: {
-    flexDirection: 'row',
+  columnWrapper: {
     justifyContent: 'space-between',
-  },
-  galleryImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
+  }
 })
