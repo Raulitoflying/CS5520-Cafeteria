@@ -3,10 +3,28 @@ import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 import CartCard from '../components/CartCard';
+import { updateDB } from '../firebase/FirebaseHelper';
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const currentUser = auth.currentUser;
+
+  function handleIncrease(item) {
+    if (!item.id || item.quantity === undefined || item.price === undefined) {
+      return;
+    }
+    const updatedItem = { ...item, quantity: item.quantity + 1 };
+    updateDB(updatedItem, item.firebaseId, 'cart');
+  }
+  
+  function handleDecrease(item) {
+    if (item.quantity === 1 || !item.id) {
+      return;
+    }
+    const updatedItem = { ...item, quantity: item.quantity - 1 };
+    updateDB(updatedItem, item.firebaseId, 'cart');
+  }
+  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -14,7 +32,7 @@ export default function Cart() {
       (snapshot) => {
         const items = snapshot.docs
           .map((doc) => ({
-            id: doc.id,
+            firebaseId: doc.id,
             ...doc.data(),
           }))
           .filter((entry) => entry.userId === currentUser.uid);
@@ -32,9 +50,9 @@ export default function Cart() {
     <View style={styles.container}>
       <FlatList
         data={cartItems}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `${item.firebaseId}-${item.quantity}`}
         renderItem={({ item }) => (
-          <CartCard item={item} />
+          <CartCard item={item} onDecrease={() => handleDecrease(item)} onIncrease={() => handleIncrease(item)}/>
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
       />

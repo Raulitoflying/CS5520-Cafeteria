@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function CartCard({ item, onIncrease, onDecrease }) {
+  const [quantity, setQuantity] = useState(item.quantity);
+  const price = item.price * quantity;
+
   return (
     <View style={styles.cardContainer}>
       <Image source={item.imageUri} style={styles.image} />
@@ -12,16 +15,16 @@ export default function CartCard({ item, onIncrease, onDecrease }) {
         
         <View style={styles.infoRow}>
           <View style={styles.sizeBox}>
-            <Text style={styles.sizeText}>M</Text>
+            <Text style={styles.sizeText}>{item.sizes}</Text>
           </View>
-          <Text style={styles.price}>${item.price}</Text>
+          <Text style={styles.price}>${price}</Text>
 
           <View style={styles.quantityContainer}>
-            <TouchableOpacity onPress={() => console.log('-')}>
+            <TouchableOpacity onPress={onDecrease}>
               <Text style={styles.quantityButton}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.quantity}>1</Text>
-            <TouchableOpacity onPress={() => console.log('+')}>
+            <Text style={styles.quantity}>{quantity}</Text>
+            <TouchableOpacity onPress={onIncrease}>
               <Text style={styles.quantityButton}>+</Text>
             </TouchableOpacity>
           </View>
