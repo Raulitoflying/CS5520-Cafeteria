@@ -81,7 +81,7 @@ export default function Profile() {
             style={styles.avatar}
             defaultSource={require('../assets/app_images/avatar.png')}
           />
-          <TouchableOpacity style={styles.editButton }>
+          <TouchableOpacity style={styles.editButton } onPress={() => navigation.navigate("EditProfile")}>
             <Feather name="edit-2" size={16} color="#FFF" />
           </TouchableOpacity>
         </View>
