@@ -4,8 +4,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase/FirebaseSetup';
+import { auth, database } from './firebase/FirebaseSetup';
 import { Feather } from '@expo/vector-icons';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { deleteFromDB } from './firebase/FirebaseHelper';
 
 import Home from './screens/Home';
 import Cart from './screens/Cart';
@@ -17,7 +19,7 @@ import Journal from './screens/Journal';
 import AddJournal from './screens/AddJournal';
 import Profile from './screens/Profile';
 import EditProfile from './screens/EditProfile';
-import PressableButton from './components/PressableButton';
+import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -78,6 +80,43 @@ export default function App() {
       <Feather name="plus" size={24} color="#4A2B29" />
     </TouchableOpacity>
   );
+
+  const deleteButton = (deleteFunction) => (
+    <TouchableOpacity
+      onPress={deleteFunction}
+      style={styles.logoutButton}
+    >
+      <Feather name="trash-2" size={24} color="#4A2B29" />
+    </TouchableOpacity>
+  );
+  
+  const handleDeleteJournal = async (journalId, navigation) => {
+    Alert.alert(
+      "Delete Journal",
+      "Are you sure you want to delete this journal?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteJournal(journalId, navigation)
+        }
+      ]
+    );
+  }
+
+  const deleteJournal = async (journalId, navigation) => {
+    try {
+      await deleteFromDB(journalId, 'journals');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error deleting journal:', error);
+      Alert.alert('Error', 'Failed to delete journal. Please try again.');
+    }
+  };
 
   function HomeStack() {
     return (
@@ -210,6 +249,14 @@ export default function App() {
             title: "Edit Profile",
           }}
         />
+        <Stack.Screen
+          name="JournalDetail"
+          component={JournalDetail}
+          options={({ route, navigation }) => ({
+            title: "Journal Detail",
+            headerRight: () => deleteButton(() => handleDeleteJournal(route.params.journalId, navigation)),
+          })}
+        />
       </Stack.Navigator>
     );
   }
@@ -236,12 +283,23 @@ export default function App() {
         tabBarInactiveTintColor: 'gray',
         headerStyle: styles.header,
         headerTintColor: '#4A2B29',
+        tabBarStyle: ((route) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+          if (routeName === 'JournalDetail') {
+            return { display: 'none' };
+          }
+          return {};
+        })(route),
       })}>
         <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
         <Tab.Screen name="History" component={HistoryStack} options={{ headerShown: false }} />
         <Tab.Screen name="Favorite" component={FavoriteStack} options={{ headerShown: false }} />
         <Tab.Screen name="Cart" component={CartStack} options={{ headerShown: false }} />
-        <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false}}/>
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStack}
+          options={{ headerShown: false}}
+        />
       </Tab.Navigator>
     );
   }
