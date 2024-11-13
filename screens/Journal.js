@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import DiaryEntryCard from './DiaryEntryCard'
+import DiaryEntryCard from '../components/DiaryEntryCard'
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 
