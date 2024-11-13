@@ -97,7 +97,7 @@ service cloud.firestore {
   - Set up app navigation and overall structure.
   - Implemented authentication and CRUD operations for Firestore.
   - Developed Home Login, Signup, Profile, and Edit Profile screens.
-
+  ![Home Page](assets/readme_images/homePage.png)
 - **Xi Xi**
   - Set up app navigation and overall structure.
   - Developed Home, Cart, Journal, Add Journal and Journal Detail screens.
