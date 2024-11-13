@@ -97,9 +97,14 @@ service cloud.firestore {
   - Set up app navigation and overall structure.
   - Implemented authentication and CRUD operations for Firestore.
   - Developed Home Login, Signup, Profile, and Edit Profile screens.
-  <img src="./assets/readme_images/homePage.png" alt="Cafeteria App Logo" width="200"/>
+  <img src="./assets/readme_images/homePage.png" alt="Home Page" width="200"/>
+  <img src="./assets/readme_images/profilePage.png" alt="Profile Page" width="200"/>
+  <img src="./assets/readme_images/editProfilePage.png" alt="Edit Profile Page" width="200"/>
 - **Xi Xi**
   - Set up app navigation and overall structure.
   - Developed Home, Cart, Journal, Add Journal and Journal Detail screens.
   - Integrated Firestore interactions in the Cart and Journal sections.
   - Created README documentation.
+  <img src="./assets/readme_images/cartPage.png" alt="Cart Page" width="200"/>
+  <img src="./assets/readme_images/journalPage.png" alt="Journal Page" width="200"/>
+  <img src="./assets/readme_images/addJournalPage.png" alt="Add Journal Profile Page" width="200"/>
