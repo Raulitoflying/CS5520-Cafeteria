@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 import CartCard from '../components/CartCard';
-import { updateDB } from '../firebase/FirebaseHelper';
+import { updateDB, deleteFromDB } from '../firebase/FirebaseHelper';
 
 export default function Cart({navigation}) {
   const [cartItems, setCartItems] = useState([]);
@@ -18,7 +18,8 @@ export default function Cart({navigation}) {
   }
   
   function handleDecrease(item) {
-    if (item.quantity === 1 || !item.id) {
+    if (item.quantity === 1) {
+      deleteFromDB(item.firebaseId, 'cart');
       return;
     }
     const updatedItem = { ...item, quantity: item.quantity - 1 };

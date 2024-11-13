@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import DiaryEntryCard from './DiaryEntryCard'
+import DiaryEntryCard from '../components/DiaryEntryCard'
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 
-export default function Journal() {
+export default function Journal({navigation}) {
   const [searchText, setSearchText] = useState('');
   const [filteredEntries, setFilteredEntries] = useState(diaryEntries);
   const [diaryEntries, setDiaryEntries] = useState([]);
@@ -15,7 +15,7 @@ export default function Journal() {
       collection(database, 'journals'),
       (snapshot) => {
         const entries = snapshot.docs.map((doc) => ({
-          id: doc.id,
+          journalId: doc.id,
           ...doc.data(),
         })).filter((entry) => entry.userId === currentUser.uid);
         setDiaryEntries(entries);
@@ -76,11 +76,11 @@ export default function Journal() {
       {/* Diary Section */}
       <FlatList
         data={filteredEntries}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.journalId.toString()}
         columnWrapperStyle={styles.columnWrapper}
         numColumns={2}
         renderItem={({ item }) => (
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('JournalDetail', {journalId: item.journalId})}>
             <DiaryEntryCard title={item.title} image={{uri: item.imageUri}} date={item.date} />
           </TouchableOpacity>
         )}
