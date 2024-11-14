@@ -8,13 +8,15 @@ import {
   ScrollView,
   Alert
 } from "react-native";
-import { auth } from "../firebase/FirebaseSetup";
+import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { collection, onSnapshot } from "firebase/firestore";
 
 export default function Profile() {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
+  const [diaryEntries, setDiaryEntries] = useState([]);
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -23,10 +25,28 @@ export default function Profile() {
     }
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(database, 'journals'),
+      (snapshot) => {
+        const entries = snapshot.docs.map((doc) => ({
+          journalId: doc.id,
+          ...doc.data(),
+        })).filter((entry) => entry.userId === user.uid);
+        setDiaryEntries(entries);
+      },
+      (error) => {
+        console.error(error);
+      }
+    )
+
+    return () => unsubscribe();
+  }, []);
+
   const userStats = {
     ordersCount: 12,
     favoritesCount: 8,
-    totalSpent: 149.99
+    journals: diaryEntries.length,
   };
 
   const menuItems = [
@@ -92,21 +112,27 @@ export default function Profile() {
       {/* Stats Section */}
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{userStats.ordersCount}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('History')}>
-            <Text style={styles.statLabel}>Orders</Text>
-            </TouchableOpacity>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.ordersCount}</Text>
+              <Text style={styles.statLabel}>Orders</Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={[styles.statItem, styles.statBorder]}>
-          <Text style={styles.statNumber}>{userStats.favoritesCount}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Favorite')}>
-          <Text style={styles.statLabel}>Favorites</Text>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.favoritesCount}</Text>
+              <Text style={styles.statLabel}>Favorites</Text>
+            </View>
           </TouchableOpacity>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>${userStats.totalSpent}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Journal')}>
-          <Text style={styles.statLabel}>Journal</Text>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.journals}</Text>
+              <Text style={styles.statLabel}>Journal</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -243,5 +269,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: 16,
     color: "#333",
+  },
+  statsButton: {
+    alignItems: 'center',
   },
 });
