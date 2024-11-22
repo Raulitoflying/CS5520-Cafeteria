@@ -89,7 +89,7 @@ export default function Profile() {
     {
       icon: "map-pin",
       title: "Delivery Addresses",
-      onPress: () => Alert.alert("Addresses", "Address management coming soon")
+      onPress: () => navigation.navigate('Address')
     },
     {
       icon: "bell",

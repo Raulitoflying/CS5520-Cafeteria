@@ -21,6 +21,8 @@ import Profile from './screens/Profile';
 import EditProfile from './screens/EditProfile';
 import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
+import Address from './screens/Address';
+import Map from './screens/Map';
 import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
@@ -256,6 +258,20 @@ export default function App() {
             title: "Journal Detail",
             headerRight: () => deleteButton(() => handleDeleteJournal(route.params.journalId, navigation)),
           })}
+        />
+        <Stack.Screen
+          name="Address"
+          component={Address}
+          options={{
+            title: "Edit Address",
+          }}
+        />
+        <Stack.Screen
+          name="Map"
+          component={Map}
+          options={{
+            title: "Map",
+          }}
         />
       </Stack.Navigator>
     );
