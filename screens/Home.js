@@ -2,15 +2,43 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView,
 import { FontAwesome } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { writeToDB } from '../firebase/FirebaseHelper'
+import { useFocusEffect } from '@react-navigation/native';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
-import { auth } from '../firebase/FirebaseSetup'
+import { auth,  database } from '../firebase/FirebaseSetup'
 
 export default function Home() {
   const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato']
   const [activeCategory, setActiveCategory] = useState('Espresso')
   const filteredCoffeeData = CoffeeData.filter(coffee => coffee.name === activeCategory)
+  const [profileImage, setProfileImage] = useState(null);
+  const currentUser = auth.currentUser;
 
+  const fetchProfileImage = async (userId) => {
+    try {
+      const q = query(
+        collection(database, 'profiles'),
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const profileData = querySnapshot.docs[0].data();
+        setProfileImage(profileData.imageUri);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (currentUser?.uid) {
+        fetchProfileImage(currentUser.uid);
+      }
+    }, [currentUser])
+  );
+  
   function handleAddPress(coffee) {
     const cartItem = {
       userId: auth.currentUser.uid,
@@ -36,7 +64,7 @@ export default function Home() {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.profileButton}>
-          <Image source={require('../assets/app_images/avatar.png')} style={styles.profileImage} />
+          <Image source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')} style={styles.profileImage} />
         </TouchableOpacity>
       </View>
 

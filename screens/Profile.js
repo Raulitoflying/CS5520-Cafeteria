@@ -10,13 +10,31 @@ import {
 } from "react-native";
 import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { collection, onSnapshot } from "firebase/firestore";
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { collection, onSnapshot, query, where, getDocs  } from "firebase/firestore";
+
 
 export default function Profile() {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
   const [diaryEntries, setDiaryEntries] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
+
+  const fetchProfileImage = async (userId) => {
+    try {
+      const q = query(
+        collection(database, 'profiles'),
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const profileData = querySnapshot.docs[0].data();
+        setProfileImage(profileData.imageUri);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   useEffect(() => {
     const currentUser = auth.currentUser;
@@ -42,6 +60,14 @@ export default function Profile() {
 
     return () => unsubscribe();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.uid) {
+        fetchProfileImage(user.uid);
+      }
+    }, [user])
+  );
 
   const userStats = {
     ordersCount: 12,
@@ -97,7 +123,7 @@ export default function Profile() {
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
-            source={require('../assets/app_images/avatar.png')}
+            source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
             style={styles.avatar}
             defaultSource={require('../assets/app_images/avatar.png')}
           />

@@ -1,14 +1,32 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import DiaryEntryCard from '../components/DiaryEntryCard'
-import { collection, onSnapshot } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, getDocs  } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 
 export default function Journal({navigation}) {
   const [searchText, setSearchText] = useState('');
   const [filteredEntries, setFilteredEntries] = useState(diaryEntries);
   const [diaryEntries, setDiaryEntries] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
   const currentUser = auth.currentUser;
+
+  const fetchProfileImage = async (userId) => {
+    try {
+      const q = query(
+        collection(database, 'profiles'),
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const profileData = querySnapshot.docs[0].data();
+        setProfileImage(profileData.imageUri);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -29,6 +47,15 @@ export default function Journal({navigation}) {
     return () => unsubscribe();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (currentUser?.uid) {
+        fetchProfileImage(currentUser.uid);
+      }
+    }, [currentUser])
+  );
+  
+
   function handleSearch(text) {
     setSearchText(text);
     const filtered = diaryEntries.filter((entry) => entry.title.toLowerCase().includes(text.toLowerCase()));
@@ -41,7 +68,7 @@ export default function Journal({navigation}) {
       <View style={styles.profileSection}>
         <View style={styles.profileImageContainer}>
           <Image
-            source={require('../assets/app_images/avatar.png')}
+            source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
             style={styles.avatar}
             defaultSource={require('../assets/app_images/avatar.png')}
           />
