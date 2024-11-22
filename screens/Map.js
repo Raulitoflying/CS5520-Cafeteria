@@ -7,7 +7,7 @@ export default function Map({ navigation }) {
     const [selectedLocation, setSelectedLocation] = useState(null);
     function confirmHandler() {
       //navigate to Profile and pass selectedLocation as params
-      navigation.navigate("Profile", { selectedLocation });
+      navigation.navigate("Address", { selectedLocation });
     }
   return (
     <>

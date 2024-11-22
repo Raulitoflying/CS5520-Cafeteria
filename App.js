@@ -8,6 +8,7 @@ import { auth, database } from './firebase/FirebaseSetup';
 import { Feather } from '@expo/vector-icons';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { deleteFromDB } from './firebase/FirebaseHelper';
+import 'react-native-gesture-handler';
 
 import Home from './screens/Home';
 import Cart from './screens/Cart';
