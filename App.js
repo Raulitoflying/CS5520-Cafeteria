@@ -24,6 +24,7 @@ import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
 import Address from './screens/Address';
 import Map from './screens/Map';
+import PaymentMethods from './screens/PaymentMethods';
 import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
@@ -272,6 +273,13 @@ export default function App() {
           component={Map}
           options={{
             title: "Map",
+          }}
+        />
+        <Stack.Screen
+          name="PaymentMethods"
+          component={PaymentMethods}
+          options={{
+            title: "PaymentMethods",
           }}
         />
       </Stack.Navigator>
