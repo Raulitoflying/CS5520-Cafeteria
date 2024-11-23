@@ -164,7 +164,6 @@ export default function PaymentMethods() {
         <Text style={styles.headerTitle}>Payment Methods</Text>
         <Text style={styles.headerSubtitle}>Manage your payment cards</Text>
       </View>
-
       {/* Saved Cards Section */}
       <View style={styles.cardsContainer}>
         {cards.map((card) => (
