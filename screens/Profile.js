@@ -16,7 +16,7 @@ import { collection, onSnapshot, query, where, getDocs  } from "firebase/firesto
 
 export default function Profile() {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+  const user = auth.currentUser;
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [profileImage, setProfileImage] = useState(null);
 
@@ -36,12 +36,12 @@ export default function Profile() {
     }
   };
 
-  useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const currentUser = auth.currentUser;
+  //   if (currentUser) {
+  //     setUser(currentUser);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
