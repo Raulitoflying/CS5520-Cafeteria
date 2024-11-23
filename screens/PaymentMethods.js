@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { auth, database } from "../firebase/FirebaseSetup";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { deleteFromDB } from '../firebase/FirebaseHelper';
 
 export default function PaymentMethods() {
   const [cards, setCards] = useState([]);
@@ -19,10 +20,25 @@ export default function PaymentMethods() {
     cardNumber: '',
     expiryDate: '',
     cardHolder: '',
-    cvv: ''
+    cvv: '',
   });
 
-  // 获取已保存的支付卡
+  // 卡号格式化 - 每4位添加空格
+  const formatCardNumber = (text) => {
+    const cleaned = text.replace(/\s/g, '');
+    const chunks = cleaned.match(/.{1,4}/g) || [];
+    return chunks.join(' ').substr(0, 19); // 16位数字 + 3个空格
+  };
+
+  // 过期日期格式化 - 添加斜杠
+  const formatExpiryDate = (text) => {
+    const cleaned = text.replace(/[^\d]/g, '');
+    if (cleaned.length >= 2) {
+      return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
+    }
+    return cleaned;
+  };
+
   useEffect(() => {
     fetchCards();
   }, []);
@@ -46,9 +62,53 @@ export default function PaymentMethods() {
   };
 
   const handleAddCard = async () => {
-    // 基本验证
-    if (!newCard.cardNumber || !newCard.expiryDate || !newCard.cardHolder || !newCard.cvv) {
-      Alert.alert('Error', 'Please fill in all fields');
+    const errors = [];
+
+    // 卡号验证 - 仅验证位数
+    const cardNumberClean = newCard.cardNumber.replace(/\s/g, '');
+    if (!cardNumberClean) {
+      errors.push('Card number is required');
+    } else if (!/^\d{16}$/.test(cardNumberClean)) {
+      errors.push('Card number must be 16 digits');
+    }
+
+    // 过期日期验证
+    if (!newCard.expiryDate) {
+      errors.push('Expiry date is required');
+    } else {
+      const [month, year] = newCard.expiryDate.split('/');
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear() % 100;
+      const currentMonth = currentDate.getMonth() + 1;
+
+      if (!/^\d{2}\/\d{2}$/.test(newCard.expiryDate)) {
+        errors.push('Expiry date must be in MM/YY format');
+      } else if (parseInt(month) < 1 || parseInt(month) > 12) {
+        errors.push('Invalid month in expiry date');
+      } else if (
+        parseInt(year) < currentYear || 
+        (parseInt(year) === currentYear && parseInt(month) < currentMonth)
+      ) {
+        errors.push('Card has expired');
+      }
+    }
+
+    // 持卡人姓名验证
+    if (!newCard.cardHolder) {
+      errors.push('Cardholder name is required');
+    } else if (!/^[A-Z\s]{2,50}$/.test(newCard.cardHolder)) {
+      errors.push('Cardholder name must be 2-50 characters long and in capital letters');
+    }
+
+    // CVV验证
+    if (!newCard.cvv) {
+      errors.push('CVV is required');
+    } else if (!/^\d{3}$/.test(newCard.cvv)) {
+      errors.push('CVV must be 3 digits');
+    }
+
+    if (errors.length > 0) {
+      Alert.alert('Validation Error', errors[0]);
       return;
     }
 
@@ -56,8 +116,7 @@ export default function PaymentMethods() {
       const cardData = {
         ...newCard,
         userId: auth.currentUser.uid,
-        // 只保存卡号后四位
-        cardNumberMasked: '****' + newCard.cardNumber.slice(-4),
+        cardNumberMasked: '****' + cardNumberClean.slice(-4),
         createdAt: new Date().toISOString()
       };
 
@@ -65,6 +124,7 @@ export default function PaymentMethods() {
       setShowAddCard(false);
       setNewCard({ cardNumber: '', expiryDate: '', cardHolder: '', cvv: '' });
       fetchCards();
+      Alert.alert('Success', 'Card added successfully');
     } catch (error) {
       console.error('Error adding card:', error);
       Alert.alert('Error', 'Failed to add card');
@@ -82,8 +142,10 @@ export default function PaymentMethods() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteDoc(doc(database, 'payment_methods', cardId));
-              fetchCards();
+              await deleteFromDB(cardId, 'cards');
+              // Update local state
+              setCards(prevCards => prevCards.filter(card => card.id !== cardId));
+              Alert.alert('Success', 'Card deleted successfully');
             } catch (error) {
               console.error('Error deleting card:', error);
               Alert.alert('Error', 'Failed to delete card');
@@ -93,6 +155,7 @@ export default function PaymentMethods() {
       ]
     );
   };
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -138,16 +201,19 @@ export default function PaymentMethods() {
       {showAddCard && (
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Add New Card</Text>
-          
+
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Card Number</Text>
             <TextInput
               style={styles.input}
               placeholder="1234 5678 9012 3456"
               value={newCard.cardNumber}
-              onChangeText={(text) => setNewCard({...newCard, cardNumber: text})}
+              onChangeText={(text) => {
+                const formatted = formatCardNumber(text);
+                setNewCard({...newCard, cardNumber: formatted});
+              }}
               keyboardType="numeric"
-              maxLength={16}
+              maxLength={19}
             />
           </View>
 
@@ -158,8 +224,12 @@ export default function PaymentMethods() {
                 style={styles.input}
                 placeholder="MM/YY"
                 value={newCard.expiryDate}
-                onChangeText={(text) => setNewCard({...newCard, expiryDate: text})}
+                onChangeText={(text) => {
+                  const formatted = formatExpiryDate(text);
+                  setNewCard({...newCard, expiryDate: formatted});
+                }}
                 maxLength={5}
+                keyboardType="numeric"
               />
             </View>
 
@@ -172,6 +242,7 @@ export default function PaymentMethods() {
                 onChangeText={(text) => setNewCard({...newCard, cvv: text})}
                 keyboardType="numeric"
                 maxLength={3}
+                secureTextEntry
               />
             </View>
           </View>
@@ -182,17 +253,21 @@ export default function PaymentMethods() {
               style={styles.input}
               placeholder="JOHN DOE"
               value={newCard.cardHolder}
-              onChangeText={(text) => setNewCard({...newCard, cardHolder: text})}
+              onChangeText={(text) => setNewCard({...newCard, cardHolder: text.toUpperCase()})}
               autoCapitalize="characters"
+              maxLength={50}
             />
           </View>
 
           <View style={styles.formButtons}>
             <TouchableOpacity
               style={[styles.button, styles.cancelButton]}
-              onPress={() => setShowAddCard(false)}
+              onPress={() => {
+                setShowAddCard(false);
+                setNewCard({ cardNumber: '', expiryDate: '', cardHolder: '', cvv: '' });
+              }}
             >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <Text style={                 styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -344,7 +419,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#4A2B29',
-    marginLeft: 10,
   },
   cancelButtonText: {
     color: '#666',
