@@ -1,26 +1,33 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, TextInput, ScrollView, Platform} from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
-import React, { useState } from 'react'
-import { writeToDB } from '../firebase/FirebaseHelper'
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  FlatList,
+  ScrollView,
+  Image,
+  Platform,
+} from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import CoffeeCard from '../components/CoffeeCard'
-import CoffeeData from '../data/CoffeeData'
-import { auth,  database } from '../firebase/FirebaseSetup'
+import { auth, database } from '../firebase/FirebaseSetup';
+import CoffeeCard from '../components/CoffeeCard';
+import CoffeeData from '../data/CoffeeData';
 
 export default function Home() {
-  const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato']
-  const [activeCategory, setActiveCategory] = useState('Espresso')
-  const filteredCoffeeData = CoffeeData.filter(coffee => coffee.name === activeCategory)
+  const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato'];
+  const [activeCategory, setActiveCategory] = useState('Espresso');
+  const filteredCoffeeData = CoffeeData.filter((coffee) => coffee.name === activeCategory);
   const [profileImage, setProfileImage] = useState(null);
   const currentUser = auth.currentUser;
 
   const fetchProfileImage = async (userId) => {
     try {
-      const q = query(
-        collection(database, 'profiles'),
-        where('userId', '==', userId)
-      );
+      const q = query(collection(database, 'profiles'), where('userId', '==', userId));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const profileData = querySnapshot.docs[0].data();
@@ -38,7 +45,7 @@ export default function Home() {
       }
     }, [currentUser])
   );
-  
+
   function handleAddPress(coffee) {
     const cartItem = {
       userId: auth.currentUser.uid,
@@ -56,15 +63,19 @@ export default function Home() {
       console.error('Error adding item to cart:', error);
     }
   }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton}>
           <FontAwesome name="bars" size={24} color="white" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.profileButton}>
-          <Image source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')} style={styles.profileImage} />
+          <Image
+            source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
+            style={styles.profileImage}
+          />
         </TouchableOpacity>
       </View>
 
@@ -74,7 +85,7 @@ export default function Home() {
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="white" />
-        <TextInput 
+        <TextInput
           placeholder="Find your coffee"
           placeholderTextColor="#888"
           style={styles.searchInput}
@@ -83,7 +94,7 @@ export default function Home() {
 
       {/* Category Tabs */}
       <View style={styles.tabsContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {categories.map((category, index) => (
             <TouchableOpacity
               key={index}
@@ -113,14 +124,17 @@ export default function Home() {
           ))}
         </ScrollView>
       </View>
-    </View>
-  )
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1b1b1b',
+  },
+
+  scrollContent: {
     padding: 16,
   },
 
@@ -160,9 +174,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 20 
+    marginBottom: 20,
   },
-  
+
   searchInput: {
     color: 'white',
     marginLeft: 10,
@@ -176,7 +190,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
 
-  tab: { 
+  tab: {
     paddingHorizontal: 12,
     marginRight: Platform.OS === 'android' ? 8 : 16,
     height: '100%',
@@ -196,6 +210,6 @@ const styles = StyleSheet.create({
   },
 
   activeTabText: {
-    color: 'orange'
+    color: 'orange',
   },
-})
+});
