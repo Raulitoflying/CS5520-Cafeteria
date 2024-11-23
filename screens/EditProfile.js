@@ -222,7 +222,6 @@ export default function EditProfile() {
             </View>
           )}
         </View>
-
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
