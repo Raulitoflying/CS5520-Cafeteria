@@ -84,7 +84,7 @@ export default function Profile() {
     {
       icon: "credit-card",
       title: "Payment Methods",
-      onPress: () => Alert.alert("Payments", "Payment methods coming soon")
+      onPress: () => navigation.navigate("PaymentMethods")
     },
     {
       icon: "map-pin",
