@@ -9,6 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { deleteFromDB } from './firebase/FirebaseHelper';
 import 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
 
 import Home from './screens/Home';
 import Cart from './screens/Cart';
@@ -26,6 +27,12 @@ import Address from './screens/Address';
 import Map from './screens/Map';
 import PaymentMethods from './screens/PaymentMethods';
 import { AntDesign } from '@expo/vector-icons';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return { shouldShowAlert: true };
+  }
+});
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

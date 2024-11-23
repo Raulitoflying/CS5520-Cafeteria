@@ -7,6 +7,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
 import { auth,  database } from '../firebase/FirebaseSetup'
+import NotificationManager from '../components/NotificationManager'
 
 export default function Home() {
   const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato']
@@ -70,7 +71,7 @@ export default function Home() {
 
       {/* Title */}
       <Text style={styles.title}>Find the Best Coffee for You</Text>
-
+      <NotificationManager />
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="white" />
