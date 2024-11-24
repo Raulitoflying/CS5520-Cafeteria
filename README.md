@@ -9,7 +9,7 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 
 ## Video Link
 - **Literal 1**: https://www.youtube.com/watch?v=1dv-jXugL6c&t=98s
-- **Literal 2**: 
+- **Literal 2**: https://www.youtube.com/watch?v=7Z2wkOLXP_o&t=4s
  
 ## Features
 1. **Authentication**: Sign up, log in, and reset password.
