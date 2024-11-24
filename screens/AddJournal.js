@@ -4,6 +4,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { auth } from '../firebase/FirebaseSetup';
 import { writeToDB } from '../firebase/FirebaseHelper';
 import { useNavigation } from '@react-navigation/native';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebase/FirebaseSetup';
 
 export default function AddJournal() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -29,9 +31,9 @@ export default function AddJournal() {
     console.log(result);
 
     if (!result.canceled) {
-      console.log(result.assets[0].uri);
-      setSelectedImage(result.assets[0].uri);
-      setModalVisible(false); // Close modal after selection
+      const imageUri = await handleImageData(result.assets[0].uri);
+      setSelectedImage(imageUri);
+      setModalVisible(false);
     }
   };
 
@@ -50,10 +52,29 @@ export default function AddJournal() {
     });
 
     if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
+      const imageUri = await handleImageData(result.assets[0].uri);
+      setSelectedImage(imageUri);
       setModalVisible(false);
     }
   };
+
+  async function handleImageData(uri) {
+    try {
+        const response = await fetch(uri);
+        if (!response.ok) {
+          throw new Error(`fetch error happen with status ${response.status}`);
+        }
+        const blob = await response.blob();
+        const imageName = uri.substring(uri.lastIndexOf('/') + 1);
+        const imageRef = await ref(storage, `images/${imageName}`);
+        const uploadResult = await uploadBytesResumable(imageRef, blob);
+        console.log('Upload image successfully', uploadResult.metadata.fullPath);
+        const downloadURL = await getDownloadURL(imageRef);
+        return downloadURL;
+      } catch (error) {
+        console.error('Error uploading image: ', error);
+    }
+  }
 
   const handleSubmit = async() => {
     if (!title || !content || !selectedImage) {

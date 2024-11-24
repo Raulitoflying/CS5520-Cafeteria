@@ -8,6 +8,8 @@ import { auth, database } from './firebase/FirebaseSetup';
 import { Feather } from '@expo/vector-icons';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { deleteFromDB } from './firebase/FirebaseHelper';
+import 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
 
 import Home from './screens/Home';
 import Cart from './screens/Cart';
@@ -21,7 +23,18 @@ import Profile from './screens/Profile';
 import EditProfile from './screens/EditProfile';
 import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
+import Address from './screens/Address';
+import Map from './screens/Map';
+import PaymentMethods from './screens/PaymentMethods';
 import { AntDesign } from '@expo/vector-icons';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true, // Show alert even if app is in foreground
+    shouldPlaySound: true, // Enable sound
+    shouldSetBadge: true, // Update badge count on app icon
+  }),
+});
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -256,6 +269,27 @@ export default function App() {
             title: "Journal Detail",
             headerRight: () => deleteButton(() => handleDeleteJournal(route.params.journalId, navigation)),
           })}
+        />
+        <Stack.Screen
+          name="Address"
+          component={Address}
+          options={{
+            title: "Edit Address",
+          }}
+        />
+        <Stack.Screen
+          name="Map"
+          component={Map}
+          options={{
+            title: "Map",
+          }}
+        />
+        <Stack.Screen
+          name="PaymentMethods"
+          component={PaymentMethods}
+          options={{
+            title: "PaymentMethods",
+          }}
         />
       </Stack.Navigator>
     );

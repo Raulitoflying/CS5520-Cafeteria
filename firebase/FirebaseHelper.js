@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, setDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, setDoc, getDoc } from "firebase/firestore";
 import { database } from "./FirebaseSetup";
 
 export async function writeToDB(data, collectionName) {
@@ -36,5 +36,33 @@ export async function updateDB(data, docId, collectionName) {
     console.log("updateDB", data, docId, collectionName);
   } catch (err) {
     console.log("update db ", err);
+  }
+}
+
+export async function getAllDocuments(collectionName) {
+  try {
+    const querySnapshot = await getDocs(collection(database, collectionName));
+    const data = [];
+    if (!querySnapshot.empty) {
+      querySnapshot.forEach((docSnap) => {
+        data.push(docSnap.data());
+      });
+    }
+    return data;
+  } catch (err) {
+    console.log("get all docs ", err);
+  }
+}
+
+export async function getOneDocument(id, collectionName) {
+  try {
+    const docSnapshot = await getDoc(doc(database, collectionName, id));
+
+    if (docSnapshot.exists()) {
+      return docSnapshot.data();
+    }
+    return null;
+  } catch (err) {
+    console.log("get one doc ", err);
   }
 }

@@ -8,25 +8,90 @@ import {
   ScrollView,
   Alert
 } from "react-native";
-import { auth } from "../firebase/FirebaseSetup";
+import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { collection, onSnapshot, query, where, getDocs  } from "firebase/firestore";
+import { scheduleDailyNotification } from "../components/NotificationManager";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 
 export default function Profile() {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+  const user = auth.currentUser;
+  const [diaryEntries, setDiaryEntries] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
+  const [isTimerPickerVisible, setTimerPickerVisible] = useState(false);
+
+  const showTimerPicker = () => {
+    setTimerPickerVisible(true);
+  }
+
+  const hideTimerPicker = () => {
+    setTimerPickerVisible(false);
+  }
+
+  const handleTimerConfirm = (time) => {
+    hideTimerPicker();
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    scheduleDailyNotification(hours, minutes);
+
+  }
+
+  const fetchProfileImage = async (userId) => {
+    try {
+      const q = query(
+        collection(database, 'profiles'),
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const profileData = querySnapshot.docs[0].data();
+        setProfileImage(profileData.imageUri);
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  // useEffect(() => {
+  //   const currentUser = auth.currentUser;
+  //   if (currentUser) {
+  //     setUser(currentUser);
+  //   }
+  // }, []);
 
   useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser);
-    }
+    const unsubscribe = onSnapshot(
+      collection(database, 'journals'),
+      (snapshot) => {
+        const entries = snapshot.docs.map((doc) => ({
+          journalId: doc.id,
+          ...doc.data(),
+        })).filter((entry) => entry.userId === user.uid);
+        setDiaryEntries(entries);
+      },
+      (error) => {
+        console.error(error);
+      }
+    )
+
+    return () => unsubscribe();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.uid) {
+        fetchProfileImage(user.uid);
+      }
+    }, [user])
+  );
 
   const userStats = {
     ordersCount: 12,
     favoritesCount: 8,
-    totalSpent: 149.99
+    journals: diaryEntries.length,
   };
 
   const menuItems = [
@@ -38,17 +103,17 @@ export default function Profile() {
     {
       icon: "credit-card",
       title: "Payment Methods",
-      onPress: () => Alert.alert("Payments", "Payment methods coming soon")
+      onPress: () => navigation.navigate("PaymentMethods")
     },
     {
       icon: "map-pin",
       title: "Delivery Addresses",
-      onPress: () => Alert.alert("Addresses", "Address management coming soon")
+      onPress: () => navigation.navigate('Address')
     },
     {
       icon: "bell",
-      title: "Notifications",
-      onPress: () => Alert.alert("Notifications", "Notification settings coming soon")
+      title: "Set Notifications Time",
+      onPress: showTimerPicker,
     },
     {
       icon: "help-circle",
@@ -72,12 +137,13 @@ export default function Profile() {
   }
 
   return (
+    <>
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
-            source={require('../assets/app_images/avatar.png')}
+            source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
             style={styles.avatar}
             defaultSource={require('../assets/app_images/avatar.png')}
           />
@@ -92,21 +158,27 @@ export default function Profile() {
       {/* Stats Section */}
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{userStats.ordersCount}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('History')}>
-            <Text style={styles.statLabel}>Orders</Text>
-            </TouchableOpacity>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.ordersCount}</Text>
+              <Text style={styles.statLabel}>Orders</Text>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={[styles.statItem, styles.statBorder]}>
-          <Text style={styles.statNumber}>{userStats.favoritesCount}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Favorite')}>
-          <Text style={styles.statLabel}>Favorites</Text>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.favoritesCount}</Text>
+              <Text style={styles.statLabel}>Favorites</Text>
+            </View>
           </TouchableOpacity>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statNumber}>${userStats.totalSpent}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Journal')}>
-          <Text style={styles.statLabel}>Journal</Text>
+            <View style={styles.statsButton}>
+              <Text style={styles.statNumber}>{userStats.journals}</Text>
+              <Text style={styles.statLabel}>Journal</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -128,6 +200,13 @@ export default function Profile() {
         ))}
       </View>
     </ScrollView>
+    <DateTimePickerModal
+      isVisible={isTimerPickerVisible}
+      mode = "time"
+      onConfirm={handleTimerConfirm}
+      onCancel={hideTimerPicker}
+    />
+    </>
   );
 }
 
@@ -243,5 +322,8 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: 16,
     color: "#333",
+  },
+  statsButton: {
+    alignItems: 'center',
   },
 });
