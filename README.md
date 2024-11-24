@@ -13,6 +13,10 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 3. **Coffee Exploration**: Browse through various coffee types and add them to the cart.
 4. **Cart Management**: Add, remove, and adjust quantities of items in the cart, with a total price calculation.
 5. **Journal**: Maintain a journal of coffee experiences with the option to add images and detailed notes.
+6. **Notification**: Implemented by Xi Xi, users now receive push notifications for order updates, reminders for journal entries, and promotions.
+7. **Location Use**: Implemented by YiXiang Zhou, location services were added to allow users to log coffee experiences with geographic data.
+8. **Payment Integration**: YiXiang Zhou added a payment feature to facilitate checkout and order completion.
+9. **About Us Page**: Created by YiXiang Zhou, this page provides app and team information.
 
 ## File Structure and Key Components
 - **Signup.js**: Handles user sign-up, form validation, and navigation to the login screen if the user already has an account.
@@ -24,6 +28,9 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 - **AddJournal.js**: Allows users to create new journal entries with images and descriptive text.
 - **Cart.js**: Displays items in the cart, allows quantity adjustments, and calculates the total price.
 - **EditProfile.js**: Allows users to edit profile details, including name, phone, and address, and update the avatar.
+- **NotificationManager.js**: Implements reminders for users to buy coffee at a fixed time each day.
+- **Payment.js**: Handles checkout functionality with payment confirmation.
+- **About.js**: Displays app and team information.
 
 ## Firestore Collections and Data Model
 - **users**: Stores user profile details (e.g., email, username, avatar).
@@ -100,6 +107,14 @@ service cloud.firestore {
   <img src="./assets/readme_images/homePage.png" alt="Home Page" width="200"/>
   <img src="./assets/readme_images/profilePage.png" alt="Profile Page" width="200"/>
   <img src="./assets/readme_images/editProfilePage.png" alt="Edit Profile Page" width="200"/>
+  <img src="./assets/readme_images/aboutus.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/helpsupport.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/location.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/location2.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/location3.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/paymentmethods1.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/paymentmethods2.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/quotesapi.png" alt="About Us" width="200"/>
 - **Xi Xi**
   - Set up app navigation and overall structure.
   - Developed Home, Cart, Journal, Add Journal and Journal Detail screens.
