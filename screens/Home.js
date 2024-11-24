@@ -71,7 +71,6 @@ export default function Home() {
 
       {/* Title */}
       <Text style={styles.title}>Find the Best Coffee for You</Text>
-      <NotificationManager />
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="white" />

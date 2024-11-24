@@ -12,6 +12,7 @@ import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { collection, onSnapshot, query, where, getDocs  } from "firebase/firestore";
+import { scheduleNotification } from "../components/NotificationManager";
 
 
 export default function Profile() {
@@ -94,7 +95,7 @@ export default function Profile() {
     {
       icon: "bell",
       title: "Notifications",
-      onPress: () => Alert.alert("Notifications", "Notification settings coming soon")
+      onPress: () => scheduleNotification()
     },
     {
       icon: "help-circle",
