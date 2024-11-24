@@ -120,7 +120,7 @@ export default function Home() {
             <Text style={styles.quoteAuthor}>— {quote.author}</Text>
           </View>
         ) : (
-          <Text style={styles.quotePlaceholder}>Click the button to fetch a quote!</Text>
+          <Text style={styles.quotePlaceholder}>A cup of coffee, onward we stride</Text>
         )}
         <TouchableOpacity style={styles.quoteButton} onPress={fetchQuote}>
           <Text style={styles.quoteButtonText}>Get Daily Quote</Text>
