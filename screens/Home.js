@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  FlatList,
   ScrollView,
   Image,
   Platform,
@@ -24,6 +23,7 @@ export default function Home() {
   const filteredCoffeeData = CoffeeData.filter((coffee) => coffee.name === activeCategory);
   const [profileImage, setProfileImage] = useState(null);
   const currentUser = auth.currentUser;
+  const [quote, setQuote] = useState(null); 
 
   const fetchProfileImage = async (userId) => {
     try {
@@ -45,6 +45,21 @@ export default function Home() {
       }
     }, [currentUser])
   );
+
+  
+  const fetchQuote = async () => {
+    try {
+      const response = await fetch('https://quotes-api-self.vercel.app/quote');
+      if (!response.ok) {
+        throw new Error('Failed to fetch the quote.');
+      }
+      const data = await response.json();
+      setQuote(data); 
+    } catch (error) {
+      console.error('Error fetching quote:', error);
+      Alert.alert('Error', 'Failed to fetch the quote.');
+    }
+  };
 
   function handleAddPress(coffee) {
     const cartItem = {
@@ -92,6 +107,22 @@ export default function Home() {
         />
       </View>
 
+      {/* Daily Quote Section */}
+      <View style={styles.quoteContainer}>
+        <Text style={styles.quoteTitle}>Daily Quote</Text>
+        {quote ? (
+          <View>
+            <Text style={styles.quoteText}>{`"${quote.quote}"`}</Text>
+            <Text style={styles.quoteAuthor}>— {quote.author}</Text>
+          </View>
+        ) : (
+          <Text style={styles.quotePlaceholder}>Click the button to fetch a quote!</Text>
+        )}
+        <TouchableOpacity style={styles.quoteButton} onPress={fetchQuote}>
+          <Text style={styles.quoteButtonText}>Get Daily Quote</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Category Tabs */}
       <View style={styles.tabsContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -133,33 +164,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1b1b1b',
   },
-
   scrollContent: {
     padding: 16,
   },
-
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   headerButton: {
     padding: 10,
   },
-
   profileButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
     overflow: 'hidden',
   },
-
   profileImage: {
     width: '100%',
     height: '100%',
   },
-
   title: {
     fontSize: 45,
     color: 'white',
@@ -167,7 +192,6 @@ const styles = StyleSheet.create({
     margin: 10,
     width: '80%',
   },
-
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -176,39 +200,72 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 20,
   },
-
   searchInput: {
     color: 'white',
     marginLeft: 10,
     flex: 1,
   },
-
+  quoteContainer: {
+    backgroundColor: '#333',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  quoteTitle: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  quoteText: {
+    fontSize: 16,
+    color: 'white',
+    fontStyle: 'italic',
+    marginBottom: 5,
+  },
+  quoteAuthor: {
+    fontSize: 14,
+    color: 'orange',
+    textAlign: 'right',
+  },
+  quotePlaceholder: {
+    fontSize: 14,
+    color: '#aaa',
+    marginBottom: 10,
+  },
+  quoteButton: {
+    backgroundColor: 'orange',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  quoteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   tabsContainer: {
     flexDirection: 'row',
     marginBottom: 16,
     marginTop: Platform.OS === 'android' ? -8 : 0,
     height: 30,
   },
-
   tab: {
     paddingHorizontal: 12,
     marginRight: Platform.OS === 'android' ? 8 : 16,
     height: '100%',
     justifyContent: 'center',
   },
-
   tabText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
   },
-
   activeTab: {
     borderBottomWidth: 2,
     borderBottomColor: 'orange',
     paddingBottom: 4,
   },
-
   activeTabText: {
     color: 'orange',
   },
