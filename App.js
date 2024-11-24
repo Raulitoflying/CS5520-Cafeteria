@@ -9,6 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { deleteFromDB } from './firebase/FirebaseHelper';
 import 'react-native-gesture-handler';
+import * as Notifications from 'expo-notifications';
 
 import Home from './screens/Home';
 import Cart from './screens/Cart';
@@ -28,6 +29,14 @@ import About from './screens/About';
 import PaymentMethods from './screens/PaymentMethods';
 import HelpSupport from './screens/HelpSupport';
 import { AntDesign } from '@expo/vector-icons';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true, // Show alert even if app is in foreground
+    shouldPlaySound: true, // Enable sound
+    shouldSetBadge: true, // Update badge count on app icon
+  }),
+});
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

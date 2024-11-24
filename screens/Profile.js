@@ -12,13 +12,32 @@ import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { collection, onSnapshot, query, where, getDocs  } from "firebase/firestore";
+import { scheduleDailyNotification } from "../components/NotificationManager";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
 export default function Profile() {
   const navigation = useNavigation();
-  const [user, setUser] = useState(null);
+  const user = auth.currentUser;
   const [diaryEntries, setDiaryEntries] = useState([]);
   const [profileImage, setProfileImage] = useState(null);
+  const [isTimerPickerVisible, setTimerPickerVisible] = useState(false);
+
+  const showTimerPicker = () => {
+    setTimerPickerVisible(true);
+  }
+
+  const hideTimerPicker = () => {
+    setTimerPickerVisible(false);
+  }
+
+  const handleTimerConfirm = (time) => {
+    hideTimerPicker();
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
+    scheduleDailyNotification(hours, minutes);
+
+  }
 
   const fetchProfileImage = async (userId) => {
     try {
@@ -36,12 +55,12 @@ export default function Profile() {
     }
   };
 
-  useEffect(() => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const currentUser = auth.currentUser;
+  //   if (currentUser) {
+  //     setUser(currentUser);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -93,8 +112,8 @@ export default function Profile() {
     },
     {
       icon: "bell",
-      title: "Notifications",
-      onPress: () => Alert.alert("Notifications", "Notification settings coming soon")
+      title: "Set Notifications Time",
+      onPress: showTimerPicker,
     },
     {
       icon: "help-circle",
@@ -118,6 +137,7 @@ export default function Profile() {
   }
 
   return (
+    <>
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.header}>
@@ -180,6 +200,13 @@ export default function Profile() {
         ))}
       </View>
     </ScrollView>
+    <DateTimePickerModal
+      isVisible={isTimerPickerVisible}
+      mode = "time"
+      onConfirm={handleTimerConfirm}
+      onCancel={hideTimerPicker}
+    />
+    </>
   );
 }
 

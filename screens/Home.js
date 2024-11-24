@@ -14,9 +14,10 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, database } from '../firebase/FirebaseSetup';
-import CoffeeCard from '../components/CoffeeCard';
-import CoffeeData from '../data/CoffeeData';
+import CoffeeCard from '../components/CoffeeCard'
+import CoffeeData from '../data/CoffeeData'
+import { auth,  database } from '../firebase/FirebaseSetup'
+import NotificationManager from '../components/NotificationManager'
 
 export default function Home() {
   const navigation = useNavigation();
@@ -100,7 +101,6 @@ export default function Home() {
 
       {/* Title */}
       <Text style={styles.title}>Find the Best Coffee for You</Text>
-
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <FontAwesome name="search" size={16} color="white" />
