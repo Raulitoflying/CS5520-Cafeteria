@@ -29,9 +29,11 @@ import PaymentMethods from './screens/PaymentMethods';
 import { AntDesign } from '@expo/vector-icons';
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => {
-    return { shouldShowAlert: true };
-  }
+  handleNotification: async () => ({
+    shouldShowAlert: true, // Show alert even if app is in foreground
+    shouldPlaySound: true, // Enable sound
+    shouldSetBadge: true, // Update badge count on app icon
+  }),
 });
 
 const Stack = createStackNavigator();

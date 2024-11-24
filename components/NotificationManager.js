@@ -11,56 +11,55 @@ export async function verifyPermission() {
       await Notifications.requestPermissionsAsync();
     return requestedPermissionsResponse.granted;
   } catch (err) {
-    console.error("verifyPermission error:", err);
+    console.error("Error in verifyPermission:", err);
     return false;
   }
 }
 
 export async function scheduleDailyNotification(hour, minute) {
   try {
-    const hasPermission = await Notifications.getPermissionsAsync();
-    if (!hasPermission.granted) {
+    const permissions = await Notifications.getPermissionsAsync();
+    if (!permissions.granted) {
       const requestPermission = await Notifications.requestPermissionsAsync();
       if (!requestPermission.granted) {
-        Alert.alert("权限不足", "请允许通知权限以调度每日提醒");
+        Alert.alert("Insufficient Permissions", "Please allow notification permissions to schedule daily reminders.");
         return;
       }
     }
 
-    const now = new Date(); // 当前时间
-    const triggerTime = new Date(); // 创建调度时间
-    triggerTime.setHours(hour, minute, 0, 0); // 设置小时和分钟，秒和毫秒置0
+    // await Notifications.cancelAllScheduledNotificationsAsync();
+    // console.log("All scheduled notifications cleared.");
 
-    console.log("当前时间:", now.toLocaleString());
-    console.log("调度时间（初始）:", triggerTime.toLocaleString());
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    console.log("Scheduled Notifications:", scheduledNotifications);
 
-    // 如果目标时间已经过了，则将通知时间调整为第二天
+    const now = new Date();
+    const triggerTime = new Date();
+    triggerTime.setHours(hour, minute, 0, 0);
+
+    // If the scheduled time has already passed today, set it to the next day
     if (triggerTime <= now) {
-      console.log("目标时间已过，调整到第二天");
       triggerTime.setDate(triggerTime.getDate() + 1);
     }
 
-    console.log("调整后的调度时间:", triggerTime.toLocaleString());
+    console.log("Current time:", now.toLocaleString());
+    console.log("Scheduled notification time:", triggerTime.toLocaleString());
 
     const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "每日提醒",
-        body: "别忘了添加您的每日目标！",
+        title: "Daily Reminder",
+        body: "Don't forget to buy a cup of coffee today!",
       },
       trigger: {
-        type: 'calendar',
-        date: triggerTime, // 使用本地时间直接调度
-        repeats: true, // 每天重复
+        type: "daily",
+        hour: hour,
+        minute: minute,
       },
     });
 
-    console.log("通知已调度，ID:", id);
-    Alert.alert("设置成功", `每日通知已设置为 ${hour}:${minute}`);
+    console.log("Notification scheduled successfully, ID:", id);
+    Alert.alert("Notification Set", `Your daily notification is set for ${hour}:${minute}`);
   } catch (err) {
-    console.error("通知调度失败:", err);
+    console.error("Failed to schedule notification:", err);
   }
 }
-
-
-
-
