@@ -99,7 +99,7 @@ export default function Profile() {
     {
       icon: "help-circle",
       title: "Help & Support",
-      onPress: () => Alert.alert("Support", "Support center coming soon")
+      onPress: () => navigation.navigate("HelpSupport")
     },
     {
       icon: "info",
