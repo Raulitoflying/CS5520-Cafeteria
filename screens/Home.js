@@ -10,6 +10,7 @@ import {
   Image,
   Platform,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -18,6 +19,7 @@ import CoffeeCard from '../components/CoffeeCard';
 import CoffeeData from '../data/CoffeeData';
 
 export default function Home() {
+  const navigation = useNavigation();
   const categories = ['Espresso', 'Americano', 'Black Coffee', 'Cappucchino', 'Latte', 'Macchiato'];
   const [activeCategory, setActiveCategory] = useState('Espresso');
   const filteredCoffeeData = CoffeeData.filter((coffee) => coffee.name === activeCategory);
@@ -86,7 +88,9 @@ export default function Home() {
           <FontAwesome name="bars" size={24} color="white" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton}
+        onPress={() => navigation.navigate('Profile')}
+        >
           <Image
             source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
             style={styles.profileImage}
