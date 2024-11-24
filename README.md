@@ -111,7 +111,6 @@ service cloud.firestore {
   <img src="./assets/readme_images/helpsupport.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/location.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/location2.png" alt="About Us" width="200"/>
-  <img src="./assets/readme_images/location3.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/paymentmethods1.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/paymentmethods2.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/quotesapi.png" alt="About Us" width="200"/>
