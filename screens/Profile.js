@@ -104,7 +104,7 @@ export default function Profile() {
     {
       icon: "info",
       title: "About Us",
-      onPress: () => Alert.alert("About", "About page coming soon")
+      onPress: () => navigation.navigate('About')
     }
   ];
 
