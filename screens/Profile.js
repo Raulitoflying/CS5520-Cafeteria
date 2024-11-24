@@ -112,7 +112,7 @@ export default function Profile() {
     },
     {
       icon: "bell",
-      title: "Notifications",
+      title: "Set Notifications Time",
       onPress: showTimerPicker,
     },
     {

@@ -54,6 +54,7 @@ export async function scheduleDailyNotification(hour, minute) {
         type: "daily",
         hour: hour,
         minute: minute,
+        repeats: true,
       },
     });
 
