@@ -26,6 +26,7 @@ import Address from './screens/Address';
 import Map from './screens/Map';
 import About from './screens/About';
 import PaymentMethods from './screens/PaymentMethods';
+import HelpSupport from './screens/HelpSupport';
 import { AntDesign } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
@@ -288,6 +289,13 @@ export default function App() {
           component={About}
           options={{
             title: "About",
+          }}
+        />
+        <Stack.Screen
+          name="HelpSupport"
+          component={HelpSupport}
+          options={{
+            title: "HelpSupport",
           }}
         />
       </Stack.Navigator>
