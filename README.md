@@ -7,6 +7,10 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 - XI XI
 - YIXIANG ZHOU
 
+## Video Link
+- **Literal 1**: https://www.youtube.com/watch?v=1dv-jXugL6c&t=98s
+- **Literal 2**: 
+ 
 ## Features
 1. **Authentication**: Sign up, log in, and reset password.
 2. **Profile Management**: Edit profile details, including updating avatar and contact information.
