@@ -118,12 +118,12 @@ export default function Profile() {
     {
       icon: "help-circle",
       title: "Help & Support",
-      onPress: () => Alert.alert("Support", "Support center coming soon")
+      onPress: () => navigation.navigate("HelpSupport")
     },
     {
       icon: "info",
       title: "About Us",
-      onPress: () => Alert.alert("About", "About page coming soon")
+      onPress: () => navigation.navigate('About')
     }
   ];
 

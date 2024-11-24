@@ -25,7 +25,9 @@ import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
 import Address from './screens/Address';
 import Map from './screens/Map';
+import About from './screens/About';
 import PaymentMethods from './screens/PaymentMethods';
+import HelpSupport from './screens/HelpSupport';
 import { AntDesign } from '@expo/vector-icons';
 
 Notifications.setNotificationHandler({
@@ -289,6 +291,20 @@ export default function App() {
           component={PaymentMethods}
           options={{
             title: "PaymentMethods",
+          }}
+        />
+        <Stack.Screen
+          name="About"
+          component={About}
+          options={{
+            title: "About",
+          }}
+        />
+        <Stack.Screen
+          name="HelpSupport"
+          component={HelpSupport}
+          options={{
+            title: "HelpSupport",
           }}
         />
       </Stack.Navigator>

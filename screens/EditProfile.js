@@ -8,12 +8,23 @@ import {
   TextInput,
   Alert,
   Modal,
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { auth } from '../firebase/FirebaseSetup';
 import { writeToDB } from '../firebase/FirebaseHelper';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+
+// Debounce utility function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
 
 export default function EditProfile() {
   const [user, setUser] = useState(null);
@@ -22,6 +33,9 @@ export default function EditProfile() {
   const [address, setAddress] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -34,7 +48,46 @@ export default function EditProfile() {
     }
   }, []);
 
-  // Open the image picker for gallery
+  // Fetch address suggestions from Google Places API
+  const fetchAddressSuggestions = async (text) => {
+    try {
+      setIsLoadingSuggestions(true);
+      const apiKey = process.env.EXPO_PUBLIC_mapsApiKey;
+      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
+        text
+      )}&types=address&key=${apiKey}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.predictions) {
+        setSuggestions(data.predictions);
+        setShowSuggestions(true);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  // Debounced version of fetchAddressSuggestions
+  const debouncedFetchSuggestions = debounce(fetchAddressSuggestions, 300);
+
+  const handleAddressChange = (text) => {
+    setAddress(text);
+    if (text.length > 1) {
+      debouncedFetchSuggestions(text);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion) => {
+    setAddress(suggestion.description);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
   const openImagePicker = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -54,7 +107,6 @@ export default function EditProfile() {
     }
   };
 
-  // Open the camera to take a photo
   const openCamera = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -79,7 +131,7 @@ export default function EditProfile() {
       Alert.alert('Missing Fields', 'Please fill in all fields to save.');
       return;
     }
-  
+
     const profileData = {
       displayName,
       phone,
@@ -87,7 +139,7 @@ export default function EditProfile() {
       imageUri: selectedImage,
       userId: user.uid,
     };
-  
+
     try {
       await writeToDB(profileData, 'profiles');
       Alert.alert('Success', 'Profile updated successfully', [
@@ -134,32 +186,42 @@ export default function EditProfile() {
       </Modal>
 
       <View style={styles.formContainer}>
-        <InputField 
-        label="Display Name" 
-        value={displayName} 
-        onChangeText={setDisplayName} 
-        icon="user"
+        <InputField label="Display Name" value={displayName} onChangeText={setDisplayName} />
+        <InputField
+          label="Email"
+          value={user?.email}
+          onChangeText={() => {}}
+          editable={false}
         />
-        <InputField 
-        label="Email" 
-        value={user?.email} 
-        onChangeText={() => {}} 
-        editable={false} 
-        icon="email"
-        />
-        <InputField 
-        label="Phone" 
-        value={phone} 
-        onChangeText={setPhone} 
-        icon="phone"
-        />
-        <InputField 
-        label="Address" 
-        value={address} 
-        onChangeText={setAddress} 
-        icon="map-pin"
-        />
-
+        <InputField label="Phone" value={phone} onChangeText={setPhone} />
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Address</Text>
+          <TextInput
+            style={styles.input}
+            value={address}
+            onChangeText={handleAddressChange}
+            placeholder="Enter your address"
+          />
+          {isLoadingSuggestions && (
+            <ActivityIndicator size="small" color="#4A2B29" style={styles.loadingSuggestions} />
+          )}
+          {showSuggestions && suggestions.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              <FlatList
+                data={suggestions}
+                keyExtractor={(item) => item.place_id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.suggestionItem}
+                    onPress={() => handleSuggestionSelect(item)}
+                  >
+                    <Text style={styles.suggestionText}>{item.description}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
+        </View>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
@@ -168,13 +230,14 @@ export default function EditProfile() {
   );
 }
 
-const InputField = ({ label, value, onChangeText }) => (
+const InputField = ({ label, value, onChangeText, editable = true }) => (
   <View style={styles.inputContainer}>
     <Text style={styles.inputLabel}>{label}</Text>
     <TextInput
       style={styles.input}
       value={value}
       onChangeText={onChangeText}
+      editable={editable}
       placeholder={`Enter ${label.toLowerCase()}`}
     />
   </View>
@@ -233,3 +296,8 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontSize: 16 },
 });
+
+
+
+
+
