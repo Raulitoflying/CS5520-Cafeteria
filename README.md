@@ -122,3 +122,6 @@ service cloud.firestore {
   <img src="./assets/readme_images/cartPage.png" alt="Cart Page" width="200"/>
   <img src="./assets/readme_images/journalPage.png" alt="Journal Page" width="200"/>
   <img src="./assets/readme_images/addJournalPage.png" alt="Add Journal Profile Page" width="200"/>
+  <img src="./assets/readme_images/notificationSet.png" alt="Add Journal Profile Page" width="200"/>
+  <img src="./assets/readme_images/notification.png" alt="Add Journal Profile Page" width="200"/>
+  <img src="./assets/readme_images/notificationSetSuccess.png" alt="Add Journal Profile Page" width="200"/>
