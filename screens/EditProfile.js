@@ -10,6 +10,7 @@ import {
   Modal,
   FlatList,
   ActivityIndicator,
+  VirtualizedList,
 } from 'react-native';
 import { auth } from '../firebase/FirebaseSetup';
 import { writeToDB } from '../firebase/FirebaseHelper';
@@ -151,8 +152,11 @@ export default function EditProfile() {
     }
   };
 
-  return (
-    <View style={styles.container}>
+  // Render method for VirtualizedList
+  const getItemCount = () => 1;
+  const getItem = () => ({});
+  const renderItem = () => (
+    <>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.avatarContainer}>
           {selectedImage ? (
@@ -226,6 +230,20 @@ export default function EditProfile() {
           <Text style={styles.saveButtonText}>Save Changes</Text>
         </TouchableOpacity>
       </View>
+    </>
+  );
+
+  return (
+    <View style={styles.container}>
+      <VirtualizedList
+        data={[{}]}
+        renderItem={renderItem}
+        keyExtractor={() => 'edit-profile'}
+        getItemCount={getItemCount}
+        getItem={getItem}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContent}
+      />
     </View>
   );
 }
@@ -244,11 +262,32 @@ const InputField = ({ label, value, onChangeText, editable = true }) => (
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
-  header: { alignItems: 'center', padding: 20, backgroundColor: '#4A2B29' },
-  headerText: { color: '#FFF', fontSize: 20, fontWeight: '600', marginTop: 10 },
-  avatarContainer: { marginTop: 20 },
-  avatar: { width: 100, height: 100, borderRadius: 50 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#F5F5F5' 
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  header: { 
+    alignItems: 'center', 
+    padding: 20, 
+    backgroundColor: '#4A2B29' 
+  },
+  headerText: { 
+    color: '#FFF', 
+    fontSize: 20, 
+    fontWeight: '600', 
+    marginTop: 10 
+  },
+  avatarContainer: { 
+    marginTop: 20 
+  },
+  avatar: { 
+    width: 100, 
+    height: 100, 
+    borderRadius: 50 
+  },
   formContainer: {
     padding: 20,
     backgroundColor: '#FFF',
@@ -256,8 +295,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 20,
   },
-  inputContainer: { marginBottom: 20 },
-  inputLabel: { fontSize: 14, color: '#666', marginBottom: 5 },
+  inputContainer: { 
+    marginBottom: 20 
+  },
+  inputLabel: { 
+    fontSize: 14, 
+    color: '#666', 
+    marginBottom: 5 
+  },
   input: {
     fontSize: 16,
     color: '#333',
@@ -272,7 +317,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  saveButtonText: { color: '#FFF', fontSize: 16, fontWeight: '600' },
+  saveButtonText: { 
+    color: '#FFF', 
+    fontSize: 16, 
+    fontWeight: '600' 
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -294,10 +343,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  buttonText: { color: '#fff', fontSize: 16 },
+  buttonText: { 
+    color: '#fff', 
+    fontSize: 16 
+  },
 });
-
-
-
-
-
