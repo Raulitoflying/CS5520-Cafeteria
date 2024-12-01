@@ -28,6 +28,7 @@ import Map from './screens/Map';
 import About from './screens/About';
 import PaymentMethods from './screens/PaymentMethods';
 import HelpSupport from './screens/HelpSupport';
+import CoffeeDetail from './screens/CoffeeDetail';
 import { AntDesign } from '@expo/vector-icons';
 
 Notifications.setNotificationHandler({
@@ -145,6 +146,13 @@ export default function App() {
           name="HomeScreen" 
           component={Home} 
           options={{ title: "Home" }}
+        />
+        <Stack.Screen
+          name="CoffeeDetail"
+          component={CoffeeDetail}
+          options={({ route }) => ({
+            title: route.params.coffee.name,
+          })}
         />
       </Stack.Navigator>
     );
