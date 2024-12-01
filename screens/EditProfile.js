@@ -96,7 +96,7 @@ export default function EditProfile() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.mediaTypes.Images,
       allowsEditing: true,
       quality: 1,
     });
@@ -115,7 +115,7 @@ export default function EditProfile() {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.mediaTypes.Images,
       allowsEditing: true,
       quality: 1,
     });
