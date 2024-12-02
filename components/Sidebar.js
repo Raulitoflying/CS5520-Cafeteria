@@ -7,11 +7,14 @@ import {
   Dimensions,
   Animated,
   Image,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Feather } from '@expo/vector-icons';
 import { auth, database } from '../firebase/FirebaseSetup';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { CommonActions } from '@react-navigation/native';
+import { signOut } from 'firebase/auth';
 
 const { width } = Dimensions.get('window');
 const SIDEBAR_WIDTH = width * 0.75;
@@ -60,17 +63,30 @@ export default function Sidebar({ isVisible, onClose }) {
     onClose();
   };
 
-  // Logout handler
+  // Logout handler with confirmation
   const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut(auth);
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to logout. Please try again.');
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -155,7 +171,7 @@ export default function Sidebar({ isVisible, onClose }) {
             style={[styles.menuItem, styles.logoutItem]}
             onPress={handleLogout}
           >
-            <FontAwesome name="sign-out" size={20} color="white" />
+            <Feather name="log-out" size={20} color="white" />
             <Text style={styles.menuText}>Logout</Text>
           </TouchableOpacity>
         </View>
