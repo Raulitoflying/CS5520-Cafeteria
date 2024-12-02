@@ -8,6 +8,7 @@ import { getDocs, query, where, collection, onSnapshot } from 'firebase/firestor
 export default function CoffeeDetail({ route, navigation }) {
   const { coffee } = route.params; // Get the coffee data passed from the previous screen
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedSize, setSelectedSize] = useState('M');
 
   useEffect(() => {
     const userId = auth.currentUser?.uid;
@@ -71,6 +72,29 @@ export default function CoffeeDetail({ route, navigation }) {
     }
   };
 
+  function handleAddPress() {
+    const cartItem = {
+      userId: auth.currentUser.uid,
+      id: coffee.id,
+      name: coffee.name,
+      imageUri: coffee.imagelink_square,
+      price: getPriceBySize(),
+      sizes: selectedSize,
+      quantity: 1,
+    };
+
+    try {
+      writeToDB(cartItem, 'cart');
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  }
+
+  const getPriceBySize = () => {
+    const selectedPrice = coffee.prices.find((price) => price.size === selectedSize);
+    return selectedPrice ? selectedPrice.price : 'N/A';
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Coffee image */}
@@ -106,9 +130,10 @@ export default function CoffeeDetail({ route, navigation }) {
           {['S', 'M', 'L'].map((size) => (
             <TouchableOpacity
               key={size}
-              style={[styles.sizeButton, size === 'S' ? styles.sizeActive : null]}
+              style={[styles.sizeButton, size === selectedSize ? styles.sizeActive : null]}
+              onPress={() => setSelectedSize(size)}
             >
-              <Text style={[styles.sizeText, size === 'S' ? styles.sizeTextActive : null]}>
+              <Text style={[styles.sizeText, size === selectedSize ? styles.sizeTextActive : null]}>
                 {size}
               </Text>
             </TouchableOpacity>
@@ -117,8 +142,8 @@ export default function CoffeeDetail({ route, navigation }) {
 
         {/* Price and Add to Cart */}
         <View style={styles.footer}>
-          <Text style={styles.price}>${coffee.prices[1].price}</Text>
-          <TouchableOpacity style={styles.addToCartButton}>
+          <Text style={styles.price}>${getPriceBySize()}</Text>
+          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddPress}>
             <Text style={styles.addToCartText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
@@ -171,9 +196,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'space-between', 
     marginBottom: 8,
-  },
-  favoriteButton: {
-    marginLeft: 8,
   },
   icon: {
     fontSize: 20, 
@@ -232,7 +254,7 @@ const styles = StyleSheet.create({
     borderColor: '#444',
     backgroundColor: '#333',
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     borderRadius: 16,
   },
   sizeActive: {

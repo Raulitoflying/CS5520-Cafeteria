@@ -15,9 +15,9 @@ export default function FavoriteCard({ coffee, onPress }) {
               <Text style={styles.subtitle}>{coffee.special_ingredient}</Text>
             </View>
             <View style={styles.tagsContainer}>
-              <Text style={[styles.tag]}>Coffee</Text>
-              <Text style={[styles.tag]}>Milk</Text>
-              <Text style={[styles.tag]}>Medium Roasted</Text>
+              <Text style={[styles.tag]}>{coffee.type}</Text>
+              <Text style={[styles.tag]}>{coffee.ingredients}</Text>
+              <Text style={[styles.tag]}>{coffee.roasted}</Text>
             </View>
           </View>
         </View>
