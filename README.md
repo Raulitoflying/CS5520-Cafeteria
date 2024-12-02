@@ -110,6 +110,23 @@ service cloud.firestore {
 }
 ```
 
+## Prerequisites
+
+To use the `CoffeeSocialInteraction` feature, you need to obtain a free ChatGPT API key from OpenAI. Follow these steps:
+
+1. **Sign up at OpenAI**  
+   Create an account by visiting [OpenAI](https://github.com/popjane/free_chatgpt_api?tab=readme-ov-file).
+
+2. **Generate an API key**  
+   - Log in to your OpenAI account.  
+   - Navigate to the API Keys section in the dashboard.  
+   - Generate a new API key.  
+
+3. **Add the API key to your `.env` file**  
+   Save the API key in your environment file with the following format:
+   ```bash
+   EXPO_PUBLIC_openAIApiKey=your_openai_api_key_here
+
 ## Contributions
 - **YiXiang Zhou**
   - Set up app navigation and overall structure.
