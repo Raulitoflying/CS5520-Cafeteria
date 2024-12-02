@@ -17,6 +17,9 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
 import { auth,  database } from '../firebase/FirebaseSetup'
+import NotificationManager from '../components/NotificationManager'
+import Sidebar from '../components/Sidebar';
+import { writeToDB } from '../firebase/FirebaseHelper';
 
 export default function Home() {
   const navigation = useNavigation();
@@ -26,6 +29,8 @@ export default function Home() {
   const [profileImage, setProfileImage] = useState(null);
   const currentUser = auth.currentUser;
   const [quote, setQuote] = useState(null); 
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
 
   const fetchProfileImage = async (userId) => {
     try {
@@ -47,6 +52,10 @@ export default function Home() {
       }
     }, [currentUser])
   );
+
+  const handleMenuPress = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
 
   
   const fetchQuote = async () => {
@@ -82,19 +91,19 @@ export default function Home() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+    <><ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton}>
-          <FontAwesome name="bars" size={24} color="white" />
+          <FontAwesome name="bars" size={24} color="white"
+            onPress={handleMenuPress} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.profileButton}
-        onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('Profile')}
         >
           <Image
             source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
-            style={styles.profileImage}
-          />
+            style={styles.profileImage} />
         </TouchableOpacity>
       </View>
 
@@ -106,8 +115,7 @@ export default function Home() {
         <TextInput
           placeholder="Find your coffee"
           placeholderTextColor="#888"
-          style={styles.searchInput}
-        />
+          style={styles.searchInput} />
       </View>
 
       {/* Daily Quote Section */}
@@ -163,6 +171,10 @@ export default function Home() {
         </ScrollView>
       </View>
     </ScrollView>
+    <Sidebar
+        isVisible={isSidebarVisible}
+        onClose={() => setIsSidebarVisible(false)}
+        currentUser={currentUser} /></>
   );
 }
 

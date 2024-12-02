@@ -48,7 +48,11 @@ export default function Profile() {
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         const profileData = querySnapshot.docs[0].data();
+        console.log('Profile data fetched:', profileData); // add profile image to the state
         setProfileImage(profileData.imageUri);
+      } else {
+        console.log('No profile data found for user:', userId);
+        setProfileImage(null); // ensure profile image is null
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -83,6 +87,7 @@ export default function Profile() {
   useFocusEffect(
     React.useCallback(() => {
       if (user?.uid) {
+        console.log('Fetching profile image for user:', user.uid);
         fetchProfileImage(user.uid);
       }
     }, [user])
@@ -146,6 +151,7 @@ export default function Profile() {
             source={profileImage ? { uri: profileImage } : require('../assets/app_images/avatar.png')}
             style={styles.avatar}
             defaultSource={require('../assets/app_images/avatar.png')}
+            onError={(error) => console.error('Image loading error:', error.nativeEvent)}
           />
           <TouchableOpacity style={styles.editButton } onPress={() => navigation.navigate("EditProfile")}>
             <Feather name="edit-2" size={16} color="#FFF" />
