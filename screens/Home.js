@@ -19,6 +19,7 @@ import CoffeeData from '../data/CoffeeData'
 import { auth,  database } from '../firebase/FirebaseSetup'
 import NotificationManager from '../components/NotificationManager'
 import Sidebar from '../components/Sidebar';
+import { writeToDB } from '../firebase/FirebaseHelper';
 
 export default function Home() {
   const navigation = useNavigation();
