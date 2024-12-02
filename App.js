@@ -188,6 +188,13 @@ export default function App() {
           component={Favorite}
           options={{ title: "Favorites" }}
         />
+        <Stack.Screen
+          name="CoffeeDetail"
+          component={CoffeeDetail}
+          options={({ route }) => ({
+            title: route.params.coffee.name,
+          })}
+        />
       </Stack.Navigator>
     );
   }

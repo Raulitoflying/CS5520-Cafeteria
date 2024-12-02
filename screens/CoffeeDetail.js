@@ -1,29 +1,96 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { writeToDB, deleteFromDB } from '../firebase/FirebaseHelper';
+import { auth, database } from '../firebase/FirebaseSetup';
+import { getDocs, query, where, collection, onSnapshot } from 'firebase/firestore';
 
 export default function CoffeeDetail({ route, navigation }) {
   const { coffee } = route.params; // Get the coffee data passed from the previous screen
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const userId = auth.currentUser?.uid;
+  
+    if (!userId) return;
+  
+    const q = query(
+      collection(database, 'favorites'),
+      where('userId', '==', userId),
+      where('coffeeId', '==', coffee.id)
+    );
+  
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          setIsFavorite(true);
+        } else {
+          setIsFavorite(false);
+        }
+      });
+    
+      return () => unsubscribe();
+    }, [coffee.id]);
+  
+  const handleFavoritePress = async () => {
+    try {
+      const userId = auth.currentUser.uid;
+
+      if (isFavorite) {
+        const querySnapshot = await getDocs(
+          query(
+            collection(database, 'favorites'),
+            where('userId', '==', userId),
+            where('coffeeId', '==', coffee.id)
+          )
+        );
+
+        if (!querySnapshot.empty) {
+          for (const docSnap of querySnapshot.docs) {
+            await deleteFromDB(docSnap.id, 'favorites');
+          }
+        }
+      } else {
+        await writeToDB(
+          {
+            userId: userId,
+            coffeeId: coffee.id,
+            name: coffee.name,
+            imageUri: coffee.imagelink_portrait,
+            special_ingredient: coffee.special_ingredient,
+            description: coffee.description,
+            type: coffee.type,
+            ingredients: coffee.ingredients,
+            roasted: coffee.roasted
+          },
+          'favorites'
+        );
+      }
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.log('Error updating favorite:', error);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Back button */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.icon}>←</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Coffee image */}
       <View style={styles.imageContainer}>
-        <Image source={ coffee.imagelink_square } style={styles.image} />
+        <Image source={ coffee.imagelink_portrait } style={styles.image} />
         {/* Overlay with Coffee details */}
         <View style={styles.overlay}>
-          <Text style={styles.title}>{coffee.name}</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{coffee.name}</Text>
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={handleFavoritePress}>
+              <AntDesign name="heart" style={[styles.icon, isFavorite && styles.redIcon]} />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.subtitle}>{coffee.special_ingredient}</Text>
           <View style={styles.tagsContainer}>
-            <Text style={[styles.tag]}>Coffee</Text>
-            <Text style={[styles.tag]}>Milk</Text>
-            <Text style={[styles.tag]}>Medium Roasted</Text>
+            <Text style={[styles.tag]}>{coffee.type}</Text>
+            <Text style={[styles.tag]}>{coffee.ingredients}</Text>
+            <Text style={[styles.tag]}>{coffee.roasted}</Text>
           </View>
         </View>
       </View>
@@ -85,7 +152,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 300,
+    height: 500,
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
   },
@@ -99,6 +166,23 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 16,
     borderBottomRightRadius: 16,
   },
+  titleContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    marginBottom: 8,
+  },
+  favoriteButton: {
+    marginLeft: 8,
+  },
+  icon: {
+    fontSize: 20, 
+    color: 'white', 
+  },
+  redIcon: {
+    fontSize: 20,
+    color: 'red',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -109,17 +193,19 @@ const styles = StyleSheet.create({
     color: '#aaa',
     marginBottom: 12,
   },
+
   tagsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
+
   tag: {
     backgroundColor: '#444',
     padding: 8,
     borderRadius: 12,
     color: '#fff',
     fontSize: 12,
-    marginHorizontal: 4,
+    marginRight: 4,
   },
   content: {
     padding: 16,
