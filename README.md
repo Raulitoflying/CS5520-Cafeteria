@@ -10,6 +10,7 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 ## Video Link
 - **Literal 1**: https://www.youtube.com/watch?v=1dv-jXugL6c&t=98s
 - **Literal 2**: https://www.youtube.com/watch?v=7Z2wkOLXP_o&t=4s
+- **Literal 3**: https://www.youtube.com/watch?v=f7naqxG8CHc&ab_channel=Ra%C3%BAlAchilles
  
 ## Features
 1. **Authentication**: Sign up, log in, and reset password.
@@ -17,10 +18,13 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 3. **Coffee Exploration**: Browse through various coffee types and add them to the cart.
 4. **Cart Management**: Add, remove, and adjust quantities of items in the cart, with a total price calculation.
 5. **Journal**: Maintain a journal of coffee experiences with the option to add images and detailed notes.
-6. **Notification**: Implemented by Xi Xi, users now receive push notifications for order updates, reminders for journal entries, and promotions.
-7. **Location Use**: Implemented by YiXiang Zhou, location services were added to allow users to log coffee experiences with geographic data.
-8. **Payment Integration**: YiXiang Zhou added a payment feature to facilitate checkout and order completion.
-9. **About Us Page**: Created by YiXiang Zhou, this page provides app and team information.
+6. **Camera**: Take photos directly within the app or choose from gallery for profile pictures and journal entries.
+7. **Location**: Manage delivery addresses with Google Places integration and interactive map selection.
+8. **Payment Management**: Add and manage multiple payment methods securely.
+9. **Help & Support**: Access FAQ section, submit support tickets, and contact customer service.
+10. **CoffeeDetail**: Created by Xi Xi, this component displays detailed information about a selected coffee, including its description, ingredients, and the option to add it to the cart or mark it as a favorite.
+11. **Favourite**: Created by Xi Xi, this component allows users to view and manage their favorite coffees, with the ability to navigate to detailed views of each coffee.
+12. **CoffeeSocialInteraction**: Created by YiXiang Zhou, this component provides a platform for users to interact with a virtual coffee expert, ask questions, and receive daily coffee tips and fun facts.
 
 ## File Structure and Key Components
 - **Signup.js**: Handles user sign-up, form validation, and navigation to the login screen if the user already has an account.
@@ -35,6 +39,9 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 - **NotificationManager.js**: Implements reminders for users to buy coffee at a fixed time each day.
 - **Payment.js**: Handles checkout functionality with payment confirmation.
 - **About.js**: Displays app and team information.
+- **CoffeeDetail.js**: Displays detailed information about a selected coffee, including its description, ingredients, and the option to add it to the cart or mark it as a favorite.
+- **Favorite.js**: Allows users to view and manage their favorite coffees, with the ability to navigate to detailed views of each coffee.
+- **CoffeeSocialInteraction.js**: Provides a platform for users to interact with a virtual coffee expert, ask questions, and receive daily coffee tips and fun facts.
 
 ## Firestore Collections and Data Model
 - **users**: Stores user profile details (e.g., email, username, avatar).
@@ -108,6 +115,7 @@ service cloud.firestore {
   - Set up app navigation and overall structure.
   - Implemented authentication and CRUD operations for Firestore.
   - Developed Home Login, Signup, Profile, and Edit Profile screens.
+  - Implemented Authentication, Location use and External API use.
   <img src="./assets/readme_images/homePage.png" alt="Home Page" width="200"/>
   <img src="./assets/readme_images/profilePage.png" alt="Profile Page" width="200"/>
   <img src="./assets/readme_images/editProfilePage.png" alt="Edit Profile Page" width="200"/>
@@ -118,14 +126,19 @@ service cloud.firestore {
   <img src="./assets/readme_images/paymentmethods1.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/paymentmethods2.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/quotesapi.png" alt="About Us" width="200"/>
+  <img src="./assets/readme_images/sidebar.png" alt="Side Bar" width="200"/>
+  <img src="./assets/readme_images/coffeesocialreaction.png" alt="Coffee Social Reaction" width="200"/>
 - **Xi Xi**
   - Set up app navigation and overall structure.
   - Developed Home, Cart, Journal, Add Journal and Journal Detail screens.
   - Integrated Firestore interactions in the Cart and Journal sections.
   - Created README documentation.
+  - Implemented Camera use, Notification use
   <img src="./assets/readme_images/cartPage.png" alt="Cart Page" width="200"/>
   <img src="./assets/readme_images/journalPage.png" alt="Journal Page" width="200"/>
   <img src="./assets/readme_images/addJournalPage.png" alt="Add Journal Profile Page" width="200"/>
   <img src="./assets/readme_images/notificationSet.png" alt="Add Journal Profile Page" width="200"/>
   <img src="./assets/readme_images/notification.png" alt="Add Journal Profile Page" width="200"/>
   <img src="./assets/readme_images/notificationSetSuccess.png" alt="Add Journal Profile Page" width="200"/>
+  <img src="./assets/readme_images/coffeedetail.png" alt="Coffee Detail" width="200"/>
+  <img src="./assets/readme_images/favourite.png" alt="Favourite" width="200"/>
