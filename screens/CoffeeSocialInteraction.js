@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,143 +6,112 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  Alert,
   ScrollView,
+  Alert,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-import { database } from "../firebase/FirebaseSetup"; 
-import { useNavigation } from '@react-navigation/native';
+import axios from "axios";
 
 export default function CoffeeSocialInteraction() {
   const [dailyTip, setDailyTip] = useState(null);
   const [funFact, setFunFact] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
-
-  // GPT Chat Integration
   const [userQuery, setUserQuery] = useState("");
   const [chatResponse, setChatResponse] = useState(null);
-  const [chatLoading, setChatLoading] = useState(false);
 
-  // Fetch data from Firebase
-  const fetchCoffeeContent = async (type, setState) => {
+  const OPENAI_API_KEY = process.env.EXPO_PUBLIC_openAIApiKey;
+
+  const fetchChatResponse = async (prompt, setState) => {
     setLoading(true);
     try {
-        const q = query(
-            collection(database, "coffeeFacts"),
-            where("type", "==", type), // Filter by "type"
-            orderBy("createdAt", "desc"), // Order by "createdAt"
-            limit(1) // Limit the results
-          );
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const data = querySnapshot.docs[0].data();
-        setState(data.fact);
-      } else {
-        throw new Error("No content found");
-      }
+      const response = await axios.post(
+        "https://free.v36.cm/v1/chat/completions",
+        {
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are a coffee expert." },
+            { role: "user", content: prompt },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setState(response.data.choices[0].message.content.trim());
     } catch (error) {
-      console.error(`Error fetching ${type}:`, error);
-      Alert.alert("Error", `Failed to fetch ${type}. Please try again.`);
+      console.error("Error fetching from ChatGPT API:", error);
+      Alert.alert("Error", "Failed to fetch content. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch daily tip and fun fact on component mount
-  useEffect(() => {
-    fetchCoffeeContent("dailyTip", setDailyTip);
-    fetchCoffeeContent("funFact", setFunFact);
-  }, []);
+  // Fetch daily tip and fun fact
+  const fetchDailyTip = () => fetchChatResponse("Provide a daily coffee tip.", setDailyTip);
+  const fetchFunFact = () => fetchChatResponse("Share a fun fact about coffee.", setFunFact);
 
-  // ChatGPT API Call
-  const handleChatSubmit = async () => {
+  const handleChatSubmit = () => {
     if (userQuery.trim() === "") {
       Alert.alert("Error", "Please enter a question about coffee!");
       return;
     }
-    setChatLoading(true);
-    try {
-      const response = await fetch("https://api.openai.com/v1/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer process.env.EXPO_PUBLIC_openAIApiKey`,
-        },
-        body: JSON.stringify({
-          model: "text-davinci-003",
-          prompt: `You are a coffee expert. Answer this user's question: ${userQuery}`,
-          max_tokens: 100,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get a response from ChatGPT.");
-      }
-
-      const data = await response.json();
-      setChatResponse(data.choices[0].text.trim());
-    } catch (error) {
-      console.error("Error with ChatGPT API:", error);
-      Alert.alert("Error", "Failed to get a response from ChatGPT.");
-    } finally {
-      setChatLoading(false);
-    }
+    fetchChatResponse(userQuery, setChatResponse);
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Coffee Social Interaction</Text>
 
-      {/* Coffee Knowledge Section */}
-      <View style={styles.knowledgeSection}>
-        <Text style={styles.sectionTitle}>Daily Coffee Knowledge</Text>
-        {loading ? (
+      {/* Daily Tip Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Daily Coffee Tip</Text>
+        {loading && !dailyTip ? (
           <ActivityIndicator size="large" color="#8B4513" />
         ) : (
-          <Text style={styles.knowledgeText}>{dailyTip || "Loading..."}</Text>
+          <Text style={styles.sectionContent}>{dailyTip || "Loading..."}</Text>
         )}
-
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={() => fetchCoffeeContent("dailyTip", setDailyTip)}
-        >
+        <TouchableOpacity style={styles.refreshButton} onPress={fetchDailyTip}>
           <FontAwesome name="refresh" size={18} color="white" />
           <Text style={styles.refreshButtonText}>Refresh Tip</Text>
         </TouchableOpacity>
       </View>
 
       {/* Fun Fact Section */}
-      <View style={styles.funFactSection}>
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Fun Fact about Coffee</Text>
-        <ScrollView>
-          <Text style={styles.funFactText}>{funFact || "Loading..."}</Text>
-        </ScrollView>
+        {loading && !funFact ? (
+          <ActivityIndicator size="large" color="#8B4513" />
+        ) : (
+          <Text style={styles.sectionContent}>{funFact || "Loading..."}</Text>
+        )}
+        <TouchableOpacity style={styles.refreshButton} onPress={fetchFunFact}>
+          <FontAwesome name="refresh" size={18} color="white" />
+          <Text style={styles.refreshButtonText}>Refresh Fact</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* GPT Chat Section */}
-      <View style={styles.chatSection}>
+      {/* Chat Section */}
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Ask the Coffee Expert</Text>
         <TextInput
-          style={styles.chatInput}
+          style={styles.input}
           placeholder="Ask a question about coffee..."
           placeholderTextColor="#999"
           value={userQuery}
           onChangeText={setUserQuery}
         />
-        <TouchableOpacity style={styles.chatButton} onPress={handleChatSubmit}>
+        <TouchableOpacity style={styles.submitButton} onPress={handleChatSubmit}>
           <FontAwesome name="paper-plane" size={18} color="white" />
-          <Text style={styles.chatButtonText}>Ask ChatGPT</Text>
+          <Text style={styles.submitButtonText}>Ask Our Virtual Expert</Text>
         </TouchableOpacity>
-        {chatLoading ? (
-          <ActivityIndicator size="large" color="#8B4513" style={styles.chatLoader} />
+        {loading && !chatResponse ? (
+          <ActivityIndicator size="large" color="#8B4513" />
         ) : (
-          chatResponse && (
-            <View style={styles.chatResponse}>
-              <Text style={styles.chatResponseText}>{chatResponse}</Text>
-            </View>
-          )
+          chatResponse && <Text style={styles.sectionContent}>{chatResponse}</Text>
         )}
       </View>
     </ScrollView>
@@ -162,16 +131,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
   },
-  knowledgeSection: {
+  section: {
     backgroundColor: "#FFF",
     padding: 16,
     borderRadius: 8,
+    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
-    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
@@ -179,11 +148,10 @@ const styles = StyleSheet.create({
     color: "#4A2B29",
     marginBottom: 8,
   },
-  knowledgeText: {
+  sectionContent: {
     fontSize: 16,
     color: "#333",
-    lineHeight: 22,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   refreshButton: {
     flexDirection: "row",
@@ -199,41 +167,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 8,
   },
-  funFactSection: {
-    backgroundColor: "#FFF5E6",
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    marginBottom: 16,
-  },
-  funFactText: {
-    fontSize: 16,
-    color: "#333",
-    lineHeight: 22,
-  },
-  chatSection: {
-    backgroundColor: "#FFF",
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-    marginBottom: 16,
-  },
-  chatInput: {
+  input: {
     borderWidth: 1,
     borderColor: "#DDD",
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
   },
-  chatButton: {
+  submitButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#8B4513",
@@ -242,22 +183,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "center",
   },
-  chatButtonText: {
+  submitButtonText: {
     color: "white",
     fontSize: 14,
     marginLeft: 8,
-  },
-  chatLoader: {
-    marginTop: 16,
-  },
-  chatResponse: {
-    marginTop: 16,
-    backgroundColor: "#F9F9F9",
-    padding: 12,
-    borderRadius: 8,
-  },
-  chatResponseText: {
-    fontSize: 16,
-    color: "#333",
   },
 });
