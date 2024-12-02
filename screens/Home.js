@@ -155,13 +155,18 @@ export default function Home() {
       <View>
         <ScrollView horizontal>
           {filteredCoffeeData.map((coffee) => (
-            <CoffeeCard
+            <TouchableOpacity
               key={coffee.id}
-              imageUri={coffee.imagelink_square}
-              title={coffee.name}
-              subtitle={coffee.special_ingredient}
-              price={coffee.prices[1].price}
-              onAddPress={() => handleAddPress(coffee)} />
+              onPress={() => navigation.navigate('CoffeeDetail', {coffee})}>
+              <CoffeeCard
+                key={coffee.id}
+                imageUri={coffee.imagelink_square}
+                title={coffee.name}
+                subtitle={coffee.special_ingredient}
+                price={coffee.prices[1].price}
+                onAddPress={() => handleAddPress(coffee)}
+              />
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>

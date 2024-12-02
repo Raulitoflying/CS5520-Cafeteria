@@ -29,6 +29,8 @@ import About from './screens/About';
 import PaymentMethods from './screens/PaymentMethods';
 import HelpSupport from './screens/HelpSupport';
 import CoffeeSocialInteraction from './screens/CoffeeSocialInteraction';
+import CoffeeDetail from './screens/CoffeeDetail';
+
 import { AntDesign } from '@expo/vector-icons';
 
 Notifications.setNotificationHandler({
@@ -151,8 +153,13 @@ export default function App() {
           name="CoffeeSocialInteraction"
           component={CoffeeSocialInteraction}
           options={{
-            title: "Coffee Community"
-          }}
+            title: "Coffee Community"}}
+          /> 
+        <Stack.Screen
+          name="CoffeeDetail"
+          component={CoffeeDetail}
+          options={({ route }) => ({
+            title: route.params.coffee.name,
         />
       </Stack.Navigator>
     );
@@ -187,6 +194,13 @@ export default function App() {
           name="FavoriteScreen" 
           component={Favorite}
           options={{ title: "Favorites" }}
+        />
+        <Stack.Screen
+          name="CoffeeDetail"
+          component={CoffeeDetail}
+          options={({ route }) => ({
+            title: route.params.coffee.name,
+          })}
         />
       </Stack.Navigator>
     );
