@@ -160,6 +160,7 @@ export default function App() {
           component={CoffeeDetail}
           options={({ route }) => ({
             title: route.params.coffee.name,
+          })}
         />
       </Stack.Navigator>
     );
