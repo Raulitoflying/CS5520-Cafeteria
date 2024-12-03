@@ -12,6 +12,7 @@ import { Feather } from '@expo/vector-icons';
 import { auth, database } from "../firebase/FirebaseSetup";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import { deleteFromDB } from '../firebase/FirebaseHelper';
+import { writeToDB } from '../firebase/FirebaseHelper';
 
 export default function PaymentMethods() {
   const [cards, setCards] = useState([]);
@@ -63,7 +64,7 @@ export default function PaymentMethods() {
 
   const handleAddCard = async () => {
     const errors = [];
-
+  
     // 卡号验证 - 仅验证位数
     const cardNumberClean = newCard.cardNumber.replace(/\s/g, '');
     if (!cardNumberClean) {
@@ -71,7 +72,7 @@ export default function PaymentMethods() {
     } else if (!/^\d{16}$/.test(cardNumberClean)) {
       errors.push('Card number must be 16 digits');
     }
-
+  
     // 过期日期验证
     if (!newCard.expiryDate) {
       errors.push('Expiry date is required');
@@ -80,7 +81,7 @@ export default function PaymentMethods() {
       const currentDate = new Date();
       const currentYear = currentDate.getFullYear() % 100;
       const currentMonth = currentDate.getMonth() + 1;
-
+  
       if (!/^\d{2}\/\d{2}$/.test(newCard.expiryDate)) {
         errors.push('Expiry date must be in MM/YY format');
       } else if (parseInt(month) < 1 || parseInt(month) > 12) {
@@ -92,38 +93,40 @@ export default function PaymentMethods() {
         errors.push('Card has expired');
       }
     }
-
+  
     // 持卡人姓名验证
     if (!newCard.cardHolder) {
       errors.push('Cardholder name is required');
     } else if (!/^[A-Z\s]{2,50}$/.test(newCard.cardHolder)) {
       errors.push('Cardholder name must be 2-50 characters long and in capital letters');
     }
-
+  
     // CVV验证
     if (!newCard.cvv) {
       errors.push('CVV is required');
     } else if (!/^\d{3}$/.test(newCard.cvv)) {
       errors.push('CVV must be 3 digits');
     }
-
+  
     if (errors.length > 0) {
       Alert.alert('Validation Error', errors[0]);
       return;
     }
-
+  
     try {
       const cardData = {
         ...newCard,
         userId: auth.currentUser.uid,
         cardNumberMasked: '****' + cardNumberClean.slice(-4),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
-
-      await addDoc(collection(database, 'payment_methods'), cardData);
+  
+      // 使用 writeToDB 将数据写入 Firestore
+      await writeToDB(cardData, 'payment_methods');
+  
       setShowAddCard(false);
       setNewCard({ cardNumber: '', expiryDate: '', cardHolder: '', cvv: '' });
-      fetchCards();
+      fetchCards(); // 刷新卡片列表
       Alert.alert('Success', 'Card added successfully');
     } catch (error) {
       console.error('Error adding card:', error);
@@ -142,16 +145,15 @@ export default function PaymentMethods() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteFromDB(cardId, 'cards');
-              // Update local state
-              setCards(prevCards => prevCards.filter(card => card.id !== cardId));
+              await deleteFromDB(cardId, 'payment_methods'); // 使用 deleteFromDB 方法
+              setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
               Alert.alert('Success', 'Card deleted successfully');
             } catch (error) {
               console.error('Error deleting card:', error);
               Alert.alert('Error', 'Failed to delete card');
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
