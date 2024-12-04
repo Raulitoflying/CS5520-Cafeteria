@@ -104,7 +104,7 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
   }
   ```
 
-  - **Payment Methods**
+- **Payment Methods**
   ```json
   {
   "userId": "bDpX3jPEDEhx4HScSWHnSJcFJE13",
