@@ -64,9 +64,11 @@ export default function Cart({navigation}) {
 
       <View style={styles.bottomContainer}>
         <Text style={styles.totalText}>Total Price: ${totalPrice.toFixed(2)}</Text>
-          <TouchableOpacity style={styles.payButton} onPress={() => navigation.navigate('Payment')}>
-            <Text style={styles.payButtonText}>Pay</Text>
-          </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.payButton} 
+          onPress={() => navigation.navigate('Payment', { totalAmount: totalPrice })}>
+          <Text style={styles.payButtonText}>Pay</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
