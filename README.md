@@ -42,6 +42,9 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
 - **CoffeeDetail.js**: Displays detailed information about a selected coffee, including its description, ingredients, and the option to add it to the cart or mark it as a favorite.
 - **Favorite.js**: Allows users to view and manage their favorite coffees, with the ability to navigate to detailed views of each coffee.
 - **CoffeeSocialInteraction.js**: Provides a platform for users to interact with a virtual coffee expert, ask questions, and receive daily coffee tips and fun facts.
+- **PaymentSuccess.js**: Displays a confirmation message after a successful payment, including order details and a summary of purchased items.
+- **History.js**: Displays the user's order history, including order details, status, and items purchased.
+
 
 ## Firestore Collections and Data Model
 - **users**: Stores user profile details (e.g., email, username, avatar).
@@ -79,6 +82,37 @@ Cafeteria is a coffee lover's companion app designed to enhance the coffee exper
     "imageUri": "file:///path/to/coffee.jpg",
     "price": 4.99,
     "quantity": 2
+  }
+
+- **Orders**
+  ```json
+  {
+  "userId": "bDpX3jPEDEhx4HScSWHnSJcFJE13",
+  "items": [
+    {
+      "id": "C11",
+      "name": "Espresso",
+      "quantity": 1,
+      "price": 3.15,
+      "imageUri": "https://example.com/espresso.jpg"
+    }
+  ],
+  "totalPrice": 3.15,
+  "paymentMethodId": "0iH4piRU4Sss4oFJ3aNh",
+  "status": "completed",
+  "timestamp": "2024-12-04T03:32:20.293Z"
+  }
+  ```
+
+  - **Payment Methods**
+  ```json
+  {
+  "userId": "bDpX3jPEDEhx4HScSWHnSJcFJE13",
+  "cardHolder": "John Doe",
+  "cardNumberMasked": "****1231",
+  "expiryDate": "12/27",
+  "cvv": "123",
+  "createdAt": "2024-12-04T02:41:41.992Z"
   }
   ```
 
@@ -145,6 +179,10 @@ To use the `CoffeeSocialInteraction` feature, you need to obtain a free ChatGPT 
   <img src="./assets/readme_images/quotesapi.png" alt="About Us" width="200"/>
   <img src="./assets/readme_images/sidebar.png" alt="Side Bar" width="200"/>
   <img src="./assets/readme_images/coffeesocialreaction.png" alt="Coffee Social Reaction" width="200"/>
+  <img src="./assets/readme_images/Payment.png" alt="payment" width="200"/>
+  <img src="./assets/readme_images/PaymentSuccess.png" alt="PaymentSuccess" width="200"/>
+  <img src="./assets/readme_images/order.png" alt="order" width="200"/>
+  
 - **Xi Xi**
   - Set up app navigation and overall structure.
   - Developed Home, Cart, Journal, Add Journal and Journal Detail screens.
