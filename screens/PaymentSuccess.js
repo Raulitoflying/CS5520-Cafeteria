@@ -1,8 +1,7 @@
 // screens/PaymentSuccess.js
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import CoffeeData from '../data/CoffeeData';
 import * as Animatable from 'react-native-animatable';
 
 export default function PaymentSuccess({ route, navigation }) {
@@ -26,7 +25,7 @@ export default function PaymentSuccess({ route, navigation }) {
         
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Order ID</Text>
-          <Text style={styles.detailValue}>#{orderDetails.timestamp.substr(0, 25)}</Text>
+          <Text style={styles.detailValue}>#{orderDetails.timestamp.substr(0, 8)}</Text>
         </View>
 
         <View style={styles.detailRow}>
@@ -55,8 +54,6 @@ export default function PaymentSuccess({ route, navigation }) {
         <Text style={styles.cardTitle}>Items</Text>
         {orderDetails.items.map((item, index) => (
           <View key={index} style={styles.itemRow}>
-            {console.log('Image URI:', item.imageUri)}
-            <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
             <View style={styles.itemDetails}>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.itemQuantity}>Quantity: {item.quantity}</Text>
@@ -153,29 +150,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
-  itemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 15,
-  },
   itemDetails: {
     flex: 1,
+    textAlign: 'left', // Ensure text is left-aligned
   },
   itemName: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
+    textAlign: 'left', // Ensure text is left-aligned
   },
   itemQuantity: {
     fontSize: 14,
     color: '#666',
     marginTop: 2,
+    textAlign: 'left', // Ensure text is left-aligned
   },
   itemPrice: {
     fontSize: 14,
     color: '#666',
     marginTop: 2,
+    textAlign: 'left', // Ensure text is left-aligned
   },
   button: {
     backgroundColor: '#4A2B29',
