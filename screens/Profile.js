@@ -12,6 +12,8 @@ import { auth, database } from "../firebase/FirebaseSetup";
 import { Feather } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { collection, onSnapshot, query, where, getDocs  } from "firebase/firestore";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/FirebaseSetup";
 import { scheduleDailyNotification } from "../components/NotificationManager";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -41,24 +43,26 @@ export default function Profile() {
 
   const fetchProfileImage = async (userId) => {
     try {
-      const q = query(
-        collection(database, 'profiles'),
-        where('userId', '==', userId)
-      );
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const profileData = querySnapshot.docs[0].data();
-        console.log('Profile data fetched:', profileData); // add profile image to the state
-        setProfileImage(profileData.imageUri);
-      } else {
-        console.log('No profile data found for user:', userId);
-        setProfileImage(null); // ensure profile image is null
-      }
+      // 定义存储路径
+      const storageRef = ref(storage, `profile_images/${userId}.jpg`);
+      
+      // 获取图片的下载 URL
+      const imageUrl = await getDownloadURL(storageRef);
+      setProfileImage(imageUrl); // 更新状态以显示图片
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile image from storage:", error);
+      setProfileImage(null); // 如果出错，使用默认图片
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.uid) {
+        fetchProfileImage(user.uid); // 从 Storage 加载图片
+      }
+    }, [user])
+  );
+  
   // useEffect(() => {
   //   const currentUser = auth.currentUser;
   //   if (currentUser) {

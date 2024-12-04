@@ -9,11 +9,12 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import { auth, database } from '../firebase/FirebaseSetup';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { CommonActions } from '@react-navigation/native';
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/FirebaseSetup";
 import { signOut } from 'firebase/auth';
 
 const { width } = Dimensions.get('window');
@@ -34,28 +35,27 @@ export default function Sidebar({ isVisible, onClose }) {
     }).start();
   }, [isVisible]);
 
-  // Fetch the profile image from Firestore
   const fetchProfileImage = async (userId) => {
     try {
-      const q = query(collection(database, 'profiles'), where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const profileData = querySnapshot.docs[0].data();
-        setProfileImage(profileData.imageUri);
-      } else {
-        setProfileImage(null); // Default to null if no image is found
-      }
+      // 定义存储路径
+      const storageRef = ref(storage, `profile_images/${userId}.jpg`);
+      
+      // 获取图片的下载 URL
+      const imageUrl = await getDownloadURL(storageRef);
+      setProfileImage(imageUrl); // 更新状态以显示图片
     } catch (error) {
-      console.error('Error fetching profile image:', error);
+      console.error("Error fetching profile image from storage:", error);
+      setProfileImage(null); // 如果出错，使用默认图片
     }
   };
 
-  // Fetch profile image when the sidebar is visible
-  useEffect(() => {
-    if (currentUser?.uid) {
-      fetchProfileImage(currentUser.uid);
-    }
-  }, [currentUser]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (currentUser?.uid) {
+        fetchProfileImage(currentUser.uid); // 从 Storage 加载图片
+      }
+    }, [currentUser])
+  );
 
   // Navigation handler
   const handleNavigation = (screenName) => {

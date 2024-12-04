@@ -17,6 +17,8 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import CoffeeCard from '../components/CoffeeCard'
 import CoffeeData from '../data/CoffeeData'
 import { auth,  database } from '../firebase/FirebaseSetup'
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/FirebaseSetup";
 import NotificationManager from '../components/NotificationManager'
 import Sidebar from '../components/Sidebar';
 import { writeToDB } from '../firebase/FirebaseHelper';
@@ -34,24 +36,26 @@ export default function Home() {
 
   const fetchProfileImage = async (userId) => {
     try {
-      const q = query(collection(database, 'profiles'), where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const profileData = querySnapshot.docs[0].data();
-        setProfileImage(profileData.imageUri);
-      }
+      // 定义存储路径
+      const storageRef = ref(storage, `profile_images/${userId}.jpg`);
+      
+      // 获取图片的下载 URL
+      const imageUrl = await getDownloadURL(storageRef);
+      setProfileImage(imageUrl); // 更新状态以显示图片
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile image from storage:", error);
+      setProfileImage(null); // 如果出错，使用默认图片
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
       if (currentUser?.uid) {
-        fetchProfileImage(currentUser.uid);
+        fetchProfileImage(currentUser.uid); // 从 Storage 加载图片
       }
     }, [currentUser])
   );
+  
 
   const handleMenuPress = () => {
     setIsSidebarVisible(!isSidebarVisible);
