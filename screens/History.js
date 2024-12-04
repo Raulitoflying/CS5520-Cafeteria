@@ -1,5 +1,5 @@
 // History.js
-import { StyleSheet, Text, View, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
@@ -30,8 +30,35 @@ export default function History() {
     fetchOrders();
   }, [currentUser]);
 
+  const renderOrderItem = ({ item }) => (
+    <View style={styles.orderCard}>
+      <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
+      <View style={styles.orderDetailRow}>
+        <Feather name="calendar" size={16} color="#4A2B29" />
+        <Text style={styles.orderDate}>{new Date(item.timestamp).toLocaleString()}</Text>
+      </View>
+      <View style={styles.orderDetailRow}>
+        <Feather name="dollar-sign" size={16} color="#4A2B29" />
+        <Text style={styles.orderAmount}>Total Amount: ${item.amount.toFixed(2)}</Text>
+      </View>
+      <View style={styles.orderDetailRow}>
+        <Feather name="check-circle" size={16} color="#4A2B29" />
+        <Text style={styles.orderStatus}>Status: {item.status}</Text>
+      </View>
+      <Text style={styles.orderItemsTitle}>Items:</Text>
+      {item.items.map((orderItem, index) => (
+        <View key={index} style={styles.orderItem}>
+          <Text style={styles.itemName}>{orderItem.name}</Text>
+          <Text style={styles.itemID}>ID: {orderItem.id}</Text>
+          <Text style={styles.itemQuantity}>Quantity: {orderItem.quantity}</Text>
+          <Text style={styles.itemPrice}>Price: ${(parseFloat(orderItem.price) || 0).toFixed(2)}</Text>
+        </View>
+      ))}
+    </View>
+  );
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Order History</Text>
       </View>
@@ -43,35 +70,11 @@ export default function History() {
         <FlatList
           data={orders}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.orderCard}>
-              <Text style={styles.orderTitle}>Order ID: {item.id}</Text>
-              <View style={styles.orderDetailRow}>
-                <Feather name="calendar" size={16} color="#4A2B29" />
-                <Text style={styles.orderDate}>{new Date(item.timestamp).toLocaleString()}</Text>
-              </View>
-              <View style={styles.orderDetailRow}>
-                <Feather name="dollar-sign" size={16} color="#4A2B29" />
-                <Text style={styles.orderAmount}>Total Amount: ${item.amount.toFixed(2)}</Text>
-              </View>
-              <View style={styles.orderDetailRow}>
-                <Feather name="check-circle" size={16} color="#4A2B29" />
-                <Text style={styles.orderStatus}>Status: {item.status}</Text>
-              </View>
-              <Text style={styles.orderItemsTitle}>Items:</Text>
-              {item.items.map((orderItem, index) => (
-                <View key={index} style={styles.orderItem}>
-                  <Text style={styles.itemName}>{orderItem.name}</Text>
-                  <Text style={styles.itemID}>ID: {orderItem.id}</Text>
-                  <Text style={styles.itemQuantity}>Quantity: {orderItem.quantity}</Text>
-                  <Text style={styles.itemPrice}>Price: ${(parseFloat(orderItem.price) || 0).toFixed(2)}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+          renderItem={renderOrderItem}
+          contentContainerStyle={styles.listContent}
         />
       )}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -100,6 +103,9 @@ const styles = StyleSheet.create({
   noOrdersText: {
     fontSize: 18,
     color: '#666',
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   orderCard: {
     backgroundColor: '#FFF',
