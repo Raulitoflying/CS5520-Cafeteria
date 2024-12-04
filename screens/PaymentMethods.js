@@ -24,14 +24,14 @@ export default function PaymentMethods() {
     cvv: '',
   });
 
-  // 卡号格式化 - 每4位添加空格
+  // cardNmber format - add space every 4 digits
   const formatCardNumber = (text) => {
     const cleaned = text.replace(/\s/g, '');
     const chunks = cleaned.match(/.{1,4}/g) || [];
-    return chunks.join(' ').substr(0, 19); // 16位数字 + 3个空格
+    return chunks.join(' ').substr(0, 19); // 16 digits + 3 spaces
   };
 
-  // 过期日期格式化 - 添加斜杠
+  // expiryDate format - add slash after 2 digits
   const formatExpiryDate = (text) => {
     const cleaned = text.replace(/[^\d]/g, '');
     if (cleaned.length >= 2) {
