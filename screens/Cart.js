@@ -1,11 +1,11 @@
-import { StyleSheet, View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, FlatList, Text, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 import CartCard from '../components/CartCard';
 import { updateDB, deleteFromDB } from '../firebase/FirebaseHelper';
 
-export default function Cart({navigation}) {
+export default function Cart({ navigation }) {
   const [cartItems, setCartItems] = useState([]);
   const currentUser = auth.currentUser;
 
@@ -16,7 +16,7 @@ export default function Cart({navigation}) {
     const updatedItem = { ...item, quantity: item.quantity + 1 };
     updateDB(updatedItem, item.firebaseId, 'cart');
   }
-  
+
   function handleDecrease(item) {
     if (item.quantity === 1) {
       deleteFromDB(item.firebaseId, 'cart');
@@ -25,7 +25,6 @@ export default function Cart({navigation}) {
     const updatedItem = { ...item, quantity: item.quantity - 1 };
     updateDB(updatedItem, item.firebaseId, 'cart');
   }
-  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -49,13 +48,21 @@ export default function Cart({navigation}) {
 
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const handlePayPress = () => {
+    if (totalPrice === 0) {
+      Alert.alert('No Items', 'Your cart is empty. Please add items to your cart before proceeding to payment.');
+      return;
+    }
+    navigation.navigate('Payment', { totalAmount: totalPrice });
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={cartItems}
         keyExtractor={(item) => `${item.firebaseId}-${item.quantity}`}
         renderItem={({ item }) => (
-          <CartCard item={item} onDecrease={() => handleDecrease(item)} onIncrease={() => handleIncrease(item)}/>
+          <CartCard item={item} onDecrease={() => handleDecrease(item)} onIncrease={() => handleIncrease(item)} />
         )}
         ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
         contentContainerStyle={{ paddingBottom: 50 }}
@@ -64,9 +71,12 @@ export default function Cart({navigation}) {
 
       <View style={styles.bottomContainer}>
         <Text style={styles.totalText}>Total Price: ${totalPrice.toFixed(2)}</Text>
-          <TouchableOpacity style={styles.payButton} onPress={() => navigation.navigate('Payment')}>
-            <Text style={styles.payButtonText}>Pay</Text>
-          </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.payButton} 
+          onPress={handlePayPress}
+        >
+          <Text style={styles.payButtonText}>Pay</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -17,6 +17,8 @@ import { writeToDB } from '../firebase/FirebaseHelper';
 import { Feather } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebase/FirebaseSetup';
 
 // Debounce utility function
 const debounce = (func, delay) => {
@@ -46,6 +48,7 @@ export default function EditProfile() {
       setDisplayName(currentUser.displayName || '');
       setPhone('');
       setAddress('');
+      setSelectedImage(currentUser.profileImageUrl || null); 
     }
   }, []);
 
@@ -127,28 +130,58 @@ export default function EditProfile() {
     }
   };
 
+  
   const handleSave = async () => {
     if (!displayName || !phone || !address || !selectedImage) {
       Alert.alert('Missing Fields', 'Please fill in all fields to save.');
       return;
     }
-
-    const profileData = {
-      displayName,
-      phone,
-      address,
-      imageUri: selectedImage,
-      userId: user.uid,
-    };
-
+  
     try {
+      const imageUrl = await uploadImageAndGetUrl(selectedImage); // 上传图片并获取公共 URL
+  
+      const profileData = {
+        displayName,
+        phone,
+        address,
+        imageUri: imageUrl, // 使用下载链接而非本地路径
+        userId: user.uid,
+      };
+  
       await writeToDB(profileData, 'profiles');
       Alert.alert('Success', 'Profile updated successfully', [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error) {
-      console.error('Error updating profile: ', error);
+      console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile. Please try again.');
+    }
+  };
+
+  const uploadImageAndGetUrl = async (uri) => {
+    try {
+      const response = await fetch(uri); // 获取本地图片文件
+      const blob = await response.blob();
+      const fileName = `${user.uid}.jpg`; // 使用用户 UID 作为文件名
+      const storageRef = ref(storage, `profile_images/${fileName}`); // Firebase Storage 路径
+  
+      const uploadTask = uploadBytesResumable(storageRef, blob);
+  
+      await new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          null,
+          (error) => reject(error), // 上传错误处理
+          () => resolve() // 上传成功
+        );
+      });
+  
+      // 获取图片下载链接
+      const downloadUrl = await getDownloadURL(storageRef);
+      return downloadUrl;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw new Error('Failed to upload image');
     }
   };
 

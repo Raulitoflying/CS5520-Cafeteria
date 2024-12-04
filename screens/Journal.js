@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import DiaryEntryCard from '../components/DiaryEntryCard'
 import { collection, onSnapshot, query, where, getDocs  } from 'firebase/firestore';
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase/FirebaseSetup";
 import { database, auth } from '../firebase/FirebaseSetup';
 
 export default function Journal({navigation}) {
@@ -14,19 +16,25 @@ export default function Journal({navigation}) {
 
   const fetchProfileImage = async (userId) => {
     try {
-      const q = query(
-        collection(database, 'profiles'),
-        where('userId', '==', userId)
-      );
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const profileData = querySnapshot.docs[0].data();
-        setProfileImage(profileData.imageUri);
-      }
+      // 定义存储路径
+      const storageRef = ref(storage, `profile_images/${userId}.jpg`);
+      
+      // 获取图片的下载 URL
+      const imageUrl = await getDownloadURL(storageRef);
+      setProfileImage(imageUrl); // 更新状态以显示图片
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile image from storage:", error);
+      setProfileImage(null); // 如果出错，使用默认图片
     }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (currentUser?.uid) {
+        fetchProfileImage(currentUser.uid); // 从 Storage 加载图片
+      }
+    }, [currentUser])
+  );
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
