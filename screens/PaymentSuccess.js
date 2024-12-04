@@ -25,7 +25,7 @@ export default function PaymentSuccess({ route, navigation }) {
         
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Order ID</Text>
-          <Text style={styles.detailValue}>#{orderDetails.timestamp.substr(0, 8)}</Text>
+          <Text style={styles.detailValue}>#{orderDetails.timestamp.substr(0, 25)}</Text>
         </View>
 
         <View style={styles.detailRow}>
