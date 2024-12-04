@@ -65,7 +65,7 @@ export default function PaymentMethods() {
   const handleAddCard = async () => {
     const errors = [];
   
-    // 卡号验证 - 仅验证位数
+    // cardNumber validation
     const cardNumberClean = newCard.cardNumber.replace(/\s/g, '');
     if (!cardNumberClean) {
       errors.push('Card number is required');
@@ -73,7 +73,7 @@ export default function PaymentMethods() {
       errors.push('Card number must be 16 digits');
     }
   
-    // 过期日期验证
+    // expiryDate validation
     if (!newCard.expiryDate) {
       errors.push('Expiry date is required');
     } else {
@@ -94,14 +94,14 @@ export default function PaymentMethods() {
       }
     }
   
-    // 持卡人姓名验证
+    // cardHolder validation
     if (!newCard.cardHolder) {
       errors.push('Cardholder name is required');
     } else if (!/^[A-Z\s]{2,50}$/.test(newCard.cardHolder)) {
       errors.push('Cardholder name must be 2-50 characters long and in capital letters');
     }
   
-    // CVV验证
+    // cvv validation
     if (!newCard.cvv) {
       errors.push('CVV is required');
     } else if (!/^\d{3}$/.test(newCard.cvv)) {
@@ -121,12 +121,12 @@ export default function PaymentMethods() {
         createdAt: new Date().toISOString(),
       };
   
-      // 使用 writeToDB 将数据写入 Firestore
+      // use writeToDB method
       await writeToDB(cardData, 'payment_methods');
   
       setShowAddCard(false);
       setNewCard({ cardNumber: '', expiryDate: '', cardHolder: '', cvv: '' });
-      fetchCards(); // 刷新卡片列表
+      fetchCards(); // reload cards
       Alert.alert('Success', 'Card added successfully');
     } catch (error) {
       console.error('Error adding card:', error);
@@ -145,7 +145,7 @@ export default function PaymentMethods() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteFromDB(cardId, 'payment_methods'); // 使用 deleteFromDB 方法
+              await deleteFromDB(cardId, 'payment_methods'); // use deleteFromDB method
               setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
               Alert.alert('Success', 'Card deleted successfully');
             } catch (error) {
