@@ -30,6 +30,7 @@ import PaymentMethods from './screens/PaymentMethods';
 import HelpSupport from './screens/HelpSupport';
 import CoffeeSocialInteraction from './screens/CoffeeSocialInteraction';
 import CoffeeDetail from './screens/CoffeeDetail';
+import PaymentSuccess from './screens/PaymentSuccess';
 
 import { AntDesign } from '@expo/vector-icons';
 
@@ -224,6 +225,20 @@ export default function App() {
           name="Payment"
           component={Payment}
           options={{ title: "Payment" }}
+        />
+        <Stack.Screen
+          name="PaymentMethods"
+          component={PaymentMethods}
+          options={{
+            title: "PaymentMethods",
+          }}
+        />
+        <Stack.Screen 
+        name="PaymentSuccess" 
+        component={PaymentSuccess}
+        options={{
+          title: "Payment Success"
+        }}
         />
       </Stack.Navigator>
     );
