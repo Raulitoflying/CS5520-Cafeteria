@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { database, auth } from '../firebase/FirebaseSetup';
 import { writeToDB } from '../firebase/FirebaseHelper';
 
@@ -24,22 +24,25 @@ export default function Payment({ route, navigation }) {
     fetchCartItems();
   }, []);
 
-  const fetchPaymentMethods = async () => {
-    try {
-      const q = query(
-        collection(database, 'payment_methods'),
-        where('userId', '==', auth.currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
+  const fetchPaymentMethods = () => {
+    const q = query(
+      collection(database, 'payment_methods'),
+      where('userId', '==', auth.currentUser.uid)
+    );
+  
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const methods = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setPaymentMethods(methods);
-    } catch (error) {
+    }, (error) => {
       console.error('Error fetching payment methods:', error);
       Alert.alert('Error', 'Failed to load payment methods');
-    }
+    });
+  
+    // Return the unsubscribe function to clean up the listener
+    return unsubscribe;
   };
 
   const fetchCartItems = async () => {

@@ -48,7 +48,7 @@ export default function Home() {
   useFocusEffect(
     React.useCallback(() => {
       if (currentUser?.uid) {
-        fetchProfileImage(currentUser.uid); // 从 Storage 加载图片
+        fetchProfileImage(currentUser.uid);
       }
     }, [currentUser])
   );
@@ -110,14 +110,6 @@ export default function Home() {
 
       {/* Title */}
       <Text style={styles.title}>Find the Best Coffee for You</Text>
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <FontAwesome name="search" size={16} color="white" />
-        <TextInput
-          placeholder="Find your coffee"
-          placeholderTextColor="#888"
-          style={styles.searchInput} />
-      </View>
 
       {/* Daily Quote Section */}
       <View style={styles.quoteContainer}>
