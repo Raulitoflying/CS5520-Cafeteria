@@ -16,16 +16,13 @@ export default function Journal({navigation}) {
 
   const fetchProfileImage = async (userId) => {
     try {
-      // 定义存储路径
       const storageRef = ref(storage, `profile_images/${userId}.jpg`);
-      
-      // 获取图片的下载 URL
       const imageUrl = await getDownloadURL(storageRef);
-      setProfileImage(imageUrl); // 更新状态以显示图片
+      setProfileImage(imageUrl);
     } catch (error) {
-      console.error("Error fetching profile image from storage:", error);
-      setProfileImage(null); // 如果出错，使用默认图片
+      console.log("Error fetching profile image from storage:", error);
     }
+    setProfileImage(null);
   };
 
   useFocusEffect(
