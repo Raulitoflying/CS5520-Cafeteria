@@ -21,7 +21,6 @@ import Journal from './screens/Journal';
 import AddJournal from './screens/AddJournal';
 import Profile from './screens/Profile';
 import EditProfile from './screens/EditProfile';
-import JournalDetail from './screens/JournalDetail';
 import Payment from './screens/Payment';
 import Address from './screens/Address';
 import Map from './screens/Map';
@@ -301,14 +300,6 @@ export default function App() {
           options={{
             title: "Edit Profile",
           }}
-        />
-        <Stack.Screen
-          name="JournalDetail"
-          component={JournalDetail}
-          options={({ route, navigation }) => ({
-            title: "Journal Detail",
-            headerRight: () => deleteButton(() => handleDeleteJournal(route.params.journalId, navigation)),
-          })}
         />
         <Stack.Screen
           name="Address"

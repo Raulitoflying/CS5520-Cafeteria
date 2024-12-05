@@ -28,7 +28,7 @@ export default function Journal({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
       if (currentUser?.uid) {
-        fetchProfileImage(currentUser.uid); // 从 Storage 加载图片
+        fetchProfileImage(currentUser.uid);
       }
     }, [currentUser])
   );
@@ -112,9 +112,7 @@ export default function Journal({navigation}) {
         columnWrapperStyle={styles.columnWrapper}
         numColumns={2}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('JournalDetail', {journalId: item.journalId})}>
             <DiaryEntryCard title={item.title} image={{uri: item.imageUri}} date={item.date} />
-          </TouchableOpacity>
         )}
       />
     </View>
